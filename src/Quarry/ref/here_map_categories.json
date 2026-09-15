@@ -1,0 +1,27 @@
+// Category names are compared with whitespace normalized (HereService.NormalizeCategoryName) --
+// the API's real names sometimes contain a literal newline (e.g. "The Dragon's Reach,\nPart 1"),
+// which is written here with a plain space instead. See docs/PLAN.md, Phase 8.
+//
+// Every LW S2-IBS row also includes its "Return to <episode>" category (verified for Daybreak and
+// Bound by Blood on 2026-09-05; the rest per the same naming pattern -- the load-time validator will
+// flag anything wrong). Dry Top and The Silverwastes use the API's combined "Return to" names instead
+// of one per episode.
+{
+  "Dry Top": ["Gates of Maguuma", "Entanglement", "The Dragon's Reach, Part 1", "Return to Gates of Maguuma and Entanglement", "Return to The Dragon's Reach"],
+  "The Silverwastes": ["Echoes of the Past", "Tangled Paths", "Point of No Return", "Return to Echoes of the Past and Tangled Paths", "Return to Seeds of Truth and Point of No Return"],
+  "Bloodstone Fen": ["Out of the Shadows", "Return to Out of the Shadows"],
+  "Ember Bay": ["Rising Flames", "Return to Rising Flames"],
+  "Bitterfrost Frontier": ["A Crack in the Ice", "Return to A Crack in the Ice"],
+  "Lake Doric": ["The Head of the Snake", "Return to The Head of the Snake"],
+  "Draconis Mons": ["Flashpoint", "Return to Flashpoint"],
+  "Siren's Landing": ["One Path Ends", "Return to One Path Ends"],
+  "Domain of Istan": ["Daybreak", "Return to Daybreak"],
+  "Sandswept Isles": ["A Bug in the System", "Return to A Bug in the System"],
+  "Domain of Kourna": ["Long Live the Lich", "Return to Long Live the Lich"],
+  "Jahai Bluffs": ["A Star to Guide Us", "Return to A Star to Guide Us"],
+  "Thunderhead Peaks": ["All or Nothing", "Return to All or Nothing"],
+  "Dragonfall": ["War Eternal", "Return to War Eternal"],
+  "Grothmar Valley": ["Prologue: Bound by Blood", "Return to Bound by Blood"],
+  "Bjora Marches": ["Whisper in the Dark", "Shadow in the Ice", "Return to Whisper in the Dark", "Return to Shadow in the Ice"],
+  "Drizzlewood Coast": ["No Quarter", "Jormag Rising", "Return to No Quarter", "Return to Jormag Rising"]
+}

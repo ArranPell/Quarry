@@ -1,0 +1,28 @@
+{
+  "name": "Quarry",
+  "version": "2.0.0",
+  "namespace": "ArranPell.Quarry",
+  "package": "Quarry.dll",
+  "manifest_version": 1,
+
+  "description": "An achievement hunter for wherever you're standing: which achievements you can finish on the current map, what's left on each, and the nearest objective to walk to \u2014 with waypoint suggestions, a Target List that stays small on purpose, and Hunt mode, which turns on a marker pack's routes for what you're hunting (needs the Pathing module).\nBased on Denrage's Achievement Tracker (MIT): https://github.com/Denrage/AchievementTrackerModule",
+  "dependencies": {
+    "bh.blishhud": ">=0.5.2"
+  },
+  "url": "https://github.com/ArranPell/Quarry",
+  "author": {
+    "name": "ArranPell",
+    "url": "https://github.com/ArranPell"
+  },
+  "api_permissions": {
+    "account": {
+      "optional": true,
+      "details": "Needed if you want to automatically track achievement progression."
+    },
+    "progression": {
+      "optional": true,
+      "details": "Needed if you want to automatically track achievement progression."
+    }
+  },
+  "directories": [ "quarry", "markers" ]
+}
