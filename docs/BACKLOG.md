@@ -233,6 +233,16 @@ unscheduled.
   `ref/`, delete `src/AchievementTrackerPlus/bin` before trusting the `.bhm` — and the Release build at
   the publish gate should start from a clean tree for the same reason.
 
+- **Blish HUD engine bug, not ours to fix here — filed as its own note, not tagged `upstream-candidate`
+  (that tag is Denrage's module specifically; this is the Blish HUD engine itself) (found 2026-09-15,
+  the cold-install crash).** `Label { WrapText = true, HorizontalAlignment != Left }` is an unconditional
+  stack overflow the moment Blish draws it — `SpriteBatchExtensions.DrawStringOnCtrl`'s per-line
+  recursive call (Blish HUD source, commit `8aa65ba1`) passes `wrap` and the alignment through unchanged
+  against a rectangle that never shrinks, so it never terminates. See the CLAUDE.md coding-rules entry
+  for the full mechanism and Quarry's fix (`AchievementTrackWindow`'s empty-state label). Worth a report
+  against `blish-hud/Blish-HUD` at some point — any module hits this the same way — but that's a
+  different repo/maintainer than Denrage's, so it doesn't fit the existing upstream-PR workflow above.
+
 *The overlay icon/tab desync, the Track window horizontal-resize bug, the Track window restart-position
 bug, and the partially-tagged-pack suppression bug moved to GitHub Issues #2–#5 on 2026-09-14 (public
 repo — first batch of issues filed to start using GitHub's tracker before going public) and are removed

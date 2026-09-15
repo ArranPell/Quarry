@@ -924,12 +924,18 @@ namespace Quarry.UserInterface.Windows
             this.noAchievementsLabel = new Label()
             {
                 Parent = this,
-                Text = "No targets yet — open Quarry and target something.",
+                // Hard-wrapped, WrapText off: Blish's DrawStringOnCtrl recurses forever when WrapText is
+                // combined with a non-Left HorizontalAlignment (SpriteBatchExtensions.cs's per-line
+                // recursive call passes both through unchanged and the rectangle never shrinks) -- crashed
+                // every cold install the instant this label was ever drawn (it's only visible while the
+                // tracked set is empty, which is why ArranPell's own persisted-state machine never hit it).
+                // A literal "\n" with WrapText off takes the safe path instead.
+                Text = "No targets yet — open Quarry\nand target something.",
                 Visible = true,
                 Location = this.flowPanel.Location,
                 Width = this.flowPanel.Width,
                 Height = this.flowPanel.Height,
-                WrapText = true,
+                WrapText = false,
                 Font = UiStyle.BodyFont,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Middle,

@@ -2,6 +2,14 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.1 — cold-install crash fix (2026-09-15)
+
+- **Fixed:** opening the Target List crashed Blish HUD outright (a stack overflow) the first time it
+  ever ran with an empty tracked set — i.e. every fresh install. Caused by a Blish HUD engine bug
+  (`Label { WrapText = true, HorizontalAlignment != Left }` recurses without end when drawn) triggered by
+  the Target List's own "No targets yet" empty-state message. Existing installs with anything already
+  tracked never hit it, which is why this shipped in 2.0.0 undetected.
+
 ## 2.0.0 — first public release (2026-09-15)
 
 Quarry began as a fork of Denrage's [Achievement Tracker](https://github.com/Denrage/AchievementTrackerModule)
