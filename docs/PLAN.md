@@ -43,9 +43,15 @@ also done (Denrage PR #8). All of it is in `docs/COMPLETED.md`.
   absorbed publish-gate items 1, 2, 4, 5 and 8 from `docs/ROADMAP.md`. **This was the last batch before
   the publish gate.**
 - **The publish gate was taken 2026-09-15**: `ArranPell/Quarry` is public (one snapshot commit), release
-  `v2.0.0` carries `Quarry.bhm`, Hunt mode stays off by default, the data files keep coming from
-  Denrage's URLs until an SSRD account exists. ROADMAP owns the gate and the new "Releasing" loop; nothing
-  is active here until the first public feedback or a BACKLOG item is scheduled.
+  `v2.0.0` carries `Quarry.bhm`, Hunt mode stays off by default. ROADMAP owns the gate and the new
+  "Releasing" loop; nothing is active here until the first public feedback or a BACKLOG item is scheduled.
+- **2.0.1 (2026-09-15)** fixed the cold-install crash in the Target List — every fresh install of 2.0.0
+  hit it, which is why "no bug reports" was never evidence of none.
+- **2.0.2 (2026-09-20) — gate item 6 closed.** The SSRD contributor account arrived 2026-09-19; the three
+  wiki data files are now mirrored on `bhud-static/ArranPell.Quarry` and served from our own namespace,
+  and `AchievementService` points there (commit `cf3bfae`, cold-install tested). We control serving, not
+  generating — the mirrors are frozen at 22 April 2026. Reasoning and the LF/`.gitattributes` hazard:
+  DECISIONS 2026-09-20 and ROADMAP gate item 6. **Remaining SSRD work: the in-game listing.**
 
 ---
 

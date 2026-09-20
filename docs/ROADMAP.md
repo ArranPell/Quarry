@@ -29,7 +29,7 @@ not on a date. Product rule unchanged: bounded sessions, not completeness.
 ```
 Upstream PR ✅  →  RC1 ✅  →  hunter-code review ✅  →  Batch C ✅  →  Phase 29 ✅  →  Batch D ✅
   →  Batch F ✅  →  Batch G ✅  →  Batch E ✅ (RC3 closed)  →  Batch H ✅  →  publish gate ✅ (2.0.0)
-  →  [post-release ← HERE: SSRD listing + hosting, load-test fixes, BACKLOG]
+  →  [post-release: SSRD hosting ✅ (2.0.2) ← HERE: SSRD in-game listing, load-test fixes, BACKLOG]
 ```
 
 - **Batch D (Phases 31–34) — done, confirmed in-game 2026-09-11.** In COMPLETED.md.
@@ -83,8 +83,9 @@ Upstream PR ✅  →  RC1 ✅  →  hunter-code review ✅  →  Batch C ✅  �
   and Batch G are all done. **Batch E was written up in full 2026-09-14 and collapsed from two phases to
   one** — Phase 36's toggle set is retired (DECISIONS 2026-09-14). **Batch E is done and confirmed
   2026-09-14; RC3 is closed. Batch H is done and confirmed 2026-09-14. The publish gate was taken
-  2026-09-15: `ArranPell/Quarry` is public, release v2.0.0 carries `Quarry.bhm`.** Next action: the SSRD
-  contributor account (listing + hosting), then whatever the first public users report.
+  2026-09-15: `ArranPell/Quarry` is public, release v2.0.0 carries `Quarry.bhm`.** The SSRD contributor
+  account arrived 2026-09-19 and **hosting is done — 2.0.2, 2026-09-20** (gate item 6). Next action: the
+  in-game listing, then whatever the first public users report.
 
 ## RC1 — The hunter exists ✅ (Phases 15, 16, 17 — all in COMPLETED.md)
 
@@ -267,8 +268,11 @@ derived subpage file) is the data-independence phase proper: `subPages.json`'s 7
 gone, replaced by a ~1.2 MB file embedded in the `.bhm`. Full record, including the load-test round, in
 COMPLETED.md.
 
-The hosting risk itself is unchanged: wiki data still comes from Denrage's URLs, `last-modified
-2026-04-22`, still v9 — five months of drift. What the review changed about the answer:
+The hosting risk is **half-closed as of 2026-09-20** (2.0.2): the three files are now served from our
+own `bhud-static/ArranPell.Quarry` branch rather than Denrage's namespace — see publish-gate item 6. But
+they are byte-for-byte mirrors, so the *staleness* half is untouched: `last-modified 2026-04-22`, still
+v9, five months of drift. **We control serving, not generating.** What the review changed about the
+answer:
 
 - **Leanness is a smaller job than this section claimed, and a differently shaped one.** The Inspector
   reads exactly two subpage fields (`Description`, `ImageUrl`); the location index reads coordinates plus
@@ -282,9 +286,9 @@ The hosting risk itself is unchanged: wiki data still comes from Denrage's URLs,
 - **Cadence is unchanged and still unscheduled**: releases rather than the calendar, a monthly Action
   plus an on-demand run after each release, a `generated` stamp in `version.json`. BACKLOG keeps it.
 
-Still in BACKLOG.md and still unscheduled: vendored snapshot fallback in the `.bhm`; SSRD `bhud-static`
-hosting once the repo is public; disk-persisted API cache and the AP tie-break follow-up; retry/backoff
-on batch failures.
+Still in BACKLOG.md and still unscheduled: vendored snapshot fallback in the `.bhm`; disk-persisted API
+cache and the AP tie-break follow-up; retry/backoff on batch failures. (SSRD `bhud-static` hosting left
+this list on 2026-09-20 — done, gate item 6.)
 
 ## Publish gate — separate from the RCs
 
@@ -342,16 +346,36 @@ gate because they depend on the repo already being public or on a decision only 
 5. ~~**Contingency hooks + log-level audit → Batch H Phase 54.**~~ **Done 2026-09-14** as Phase 56 items
    12–15 and 27: `Blish_HUD.Debug.Contingency` at the three denied-write / no-network sites, and the log
    down to 12 Info lines per start (GitHub issue #13).
-6. **SSRD static hosting** of the data files — **deferred past 2.0.0 (ArranPell, 2026-09-15): the three
-   files keep coming from Denrage's URLs**, which work today and whose failures Phase 56 made honest. Next
-   step is a human one: ask Freesnöw on the Blish HUD Discord for an SSRD contributor account (the same
-   account lists the module in the in-game repository), then push a `bhud-static/ArranPell.Quarry` branch
-   and repoint the URLs in a 2.0.x. Original text: needs a contributor account, which needs the repo public,
-   so it runs after item 0, with the **three** remaining `AchievementService` URLs repointed after.
-   (Phase 48 removed the fourth: `subPages.json` is now embedded in the `.bhm`.) **Stays at the gate**,
-   and Batch H Phase 51 deliberately leaves those three Denrage-named URLs alone for this reason. With
-   only three small files left, "embed the rest too and stop phoning home" is a live alternative worth
-   costing here rather than assuming SSRD.
+6. ~~**SSRD static hosting** of the data files.~~ **Done 2026-09-20, shipped in 2.0.2.** The contributor
+   account arrived 2026-09-19; `ArranPell/Quarry` is registered in SSRD with a push webhook; the three
+   files live on an orphan `bhud-static/ArranPell.Quarry` branch and are served at
+   `https://bhm.blishhud.com/ArranPell.Quarry/data/`. `AchievementService`'s three URLs were repointed in
+   2.0.2 (commit `cf3bfae`) and cold-install tested. The **served** copies were re-downloaded and hashed:
+   byte-for-byte identical to Denrage's originals, md5s matching what `version.json` publishes.
+   **What this bought, and what it did not.** We control *serving*, not *generating*. The files are mirrors
+   frozen at `last-modified 2026-04-22`, still v9, and `Gw2WikiDownloader` cannot rebuild them (see the
+   Data independence section). If Denrage ever regenerates and bumps to v10, his users get fresh data and
+   ours do not. Existing installs paid nothing on upgrade: `version.json` still reports Version 9 and the
+   cached md5s still match, so the download path never runs — which also means a warm test proves nothing
+   and only a cold one is evidence.
+   **The "embed the rest too" alternative is costed, and NOT ruled out.** Raw, the three files are 28.1 MB
+   (`version.json` 201 B, `achievement_data.json` 8.4 MB, `achievement_tables.json` 19.7 MB) — but the
+   `.bhm` is a zip, so raw bytes are the wrong comparison. Measured 2026-09-20: they deflate **13.8:1 to
+   2.0 MB** (8.4 → 0.85 MB, 19.7 → 1.18 MB), taking the `.bhm` from 2.2 MB to roughly **4.2 MB**. That is
+   close to the "~2.2 → ~6 MB" estimate in DECISIONS 2026-09-15, which was right. Embedding would also
+   remove ~28 MB of first-run download per user, the md5 verification machinery, and the hosting
+   dependency outright. The only thing hosting buys over embedding is refreshing data without a module
+   release — worth nothing while the data cannot be regenerated at all. **Live option for a 2.x; it
+   deserves its own decision rather than this footnote.**
+   **Hazard found and guarded — do not undo this.** SSRD builds on Windows (its Sentry stack paths are
+   `C:\BhApps\BhudRequestFor\work\...`) and the data files are LF-only, with 585,648 newlines in
+   `achievement_tables.json`. Any EOL conversion on SSRD's clone would change every byte count, fail the
+   md5 check, exhaust `DownloadFile`'s three retries and leave fresh installs with no data — silently, with
+   the branch looking perfect. The static branch's **first** commit is a `.gitattributes` containing
+   `* -text`. Never remove it, and never add a data file to that branch ahead of it.
+   **Still on Denrage's URLs:** `DerivedSubpageGenerator`'s `subPages.json` source (70 MB, build-time only,
+   deliberately not mirrored — disproportionate to re-clone on every webhook push for a tool run twice a
+   year). Archiving a local copy is the cheap insurance if that dependency ever matters.
 7. ~~**Release build + `CHANGELOG.md`** keyed by manifest version.~~ **Done 2026-09-15: 2.0.0.**
    `CHANGELOG.md` at the repo root, keyed by the manifest version; `dotnet build -c Release` writes
    `src\Quarry\bin\Release\net4.7.2\Quarry.bhm` (2.2 MB, pdb included so Blish crash reports keep line
@@ -408,7 +432,9 @@ from this repo on `fork` with a clean tree:
 
    (`git rm -rq .` first so files deleted since the last release disappear from the snapshot too.)
 4. `gh release create v<version> src\Quarry\bin\Release\net4.7.2\Quarry.bhm --repo ArranPell/Quarry --title "Quarry <version>" --notes-file <the CHANGELOG section>`.
-5. Once the SSRD account exists: submit the release there so the in-game module repository picks it up.
+5. The SSRD account exists (2026-09-19) and `ArranPell/Quarry` is registered with a push webhook, so
+   submit the release there for the in-game module repository to pick it up. **Not done as of 2026-09-20**
+   — the in-game listing is the remaining half of the SSRD work; hosting (gate item 6) is finished.
 
 Never push this repo's branches to the public repo — that is the history item 0 exists to keep private.
 

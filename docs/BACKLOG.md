@@ -183,8 +183,11 @@ and #9 on 2026-09-14 and are removed here per the rule above.*
   ample; the hosted files are `last-modified 2026-04-22`, which is what months of drift looks like.
   Add a `generated` timestamp to `version.json` so staleness is visible instead of inferred.
   *How:* a scheduled GitHub Action in our repo runs `Gw2WikiDownloader` and commits the output to the
-  `bhud-static/<namespace>` branch, which SSRD auto-deploys by webhook — no server to run, and it composes
-  with the publish-gate item below (needs the repo public and an SSRD account first).
+  `bhud-static/<namespace>` branch, which SSRD auto-deploys by webhook — no server to run. **The access
+  half of this is now in place (2026-09-20):** the repo is public, the SSRD account exists, the webhook is
+  configured and `bhud-static/ArranPell.Quarry` is live and serving. So the blocker is no longer access —
+  it is purely that the scraper cannot yet produce what the module verifies against, below. An Action that
+  commits to that branch would work today if it had something correct to commit.
   **What that plan still has to solve, found 2026-09-13 by reading the scraper** (review §4.4): it scrapes
   rendered HTML, not `api.php`; `Program.cs:21-29` requires a `cookies.txt` at startup, unguarded; the
   achievement-data and tables paths are commented out at `Program.cs:117-123`, so a run as committed
@@ -289,23 +292,21 @@ from here rather than reintroduced by this merge.
   ignore marker packs; add one if this need recurs.
 ## Risks
 
-- **Wiki data comes from Denrage's URLs.** `bhm.blishhud.com/Denrage.AchievementTrackerModule/data/`.
-  If upstream is ever pulled from the package repo, fresh installs get no data. Hosting our own is out of
-  scope; a lighter mitigation is bundling a snapshot of `data/*.json` in the `.bhm` as a fallback when the
-  download fails. Decide only if the risk becomes real. *(Wren, 2026-09-06)*
-  *Update 2026-09-09 — the pipeline may be less alive than we assumed.* The hosted
-  `achievement_tables.json` returns `last-modified: Wed, 22 Apr 2026` and `version.json` is still v9, so
-  the "v9 covers JW + VoE, therefore it's being regenerated" read from 2026-09-08 is at best months
-  stale. Nothing is broken today, but it moves the vendored-snapshot fallback up the list and is the
-  second argument (after the scrape-quality finding in Features) for eventually running
-  `Gw2WikiDownloader` ourselves.
-  *Update 2026-09-08:* hosting our own is actually free — SSRD's static hosting
-  (docs/modules/ssrd/additional-services) serves any `bhud-static/<namespace>` branch at
-  `https://bhm.blishhud.com/<namespace>/`, auto-deployed by webhook. Needs an SSRD contributor account
-  (Discord, Freesnöw), which only makes sense once the repo is public — so it sits with the LICENSE item
-  as a "before publishing" step: ~~LICENSE~~ (done 2026-09-08) → SSRD account → push `bhud-static/Arran.AchievementTrackerModule`
-  with `data/*.json` → repoint the four URLs in `AchievementService`. The vendored-snapshot fallback is
-  still the right interim step and stays useful after (offline / AV-blocked first run).
+- ~~**Wiki data comes from Denrage's URLs.**~~ **Serving half closed 2026-09-20 (2.0.2).** The three
+  files are now mirrored on our own orphan `bhud-static/ArranPell.Quarry` branch and served from
+  `https://bhm.blishhud.com/ArranPell.Quarry/data/`; `AchievementService` points there as of commit
+  `cf3bfae`. Upstream being pulled from the package repo no longer starves fresh installs. Full record,
+  including the Windows/LF `.gitattributes` hazard that guards it, is ROADMAP publish-gate item 6.
+  **What remains is the staleness half, and it is now the whole risk.** The mirrors are byte-for-byte
+  copies of files dated `last-modified: Wed, 22 Apr 2026`, `version.json` still v9 — five months of drift
+  and counting. We control serving, not generating: `Gw2WikiDownloader` as committed cannot rebuild these
+  (see the cadence entry in Features for exactly what it can't do). Nothing is broken today; it stays
+  broken-in-the-same-way until someone writes the generation half.
+  The **vendored-snapshot fallback** is still worth having and is unaffected by this change — it covers
+  offline and AV-blocked first runs, which our own hosting does nothing for. Still unscheduled.
+  A smaller loose end: `DerivedSubpageGenerator` still reads `subPages.json` (70 MB) from Denrage's
+  namespace. It is build-time only and deliberately not mirrored; archiving a local copy is the cheap
+  insurance. *(original entry Wren, 2026-09-06; updates 2026-09-08, 2026-09-09, 2026-09-20)*
 
 ## Closed
 
@@ -315,4 +316,5 @@ from here rather than reintroduced by this merge.
 ## Explicitly out of scope
 
 Raising the 15-tracked cap (it's already a setting), Pathing-style markers of our own, anything WvW/PvP,
-hosting our own data files, regenerating wiki data.
+regenerating wiki data. (“Hosting our own data files” left this list on 2026-09-20 — it was done, and
+cost far less than this line assumed: ROADMAP gate item 6.)

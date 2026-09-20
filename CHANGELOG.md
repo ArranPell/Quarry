@@ -2,6 +2,19 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.2 — our own data hosting, and Quarry's own mark (2026-09-20)
+
+- **Changed:** the three wiki data files now come from Quarry's own hosting at
+  `bhm.blishhud.com/ArranPell.Quarry/` instead of Denrage's module namespace.
+  The files are byte-identical mirrors, so existing installs keep their cached
+  copies and download nothing. This removes the dependency on another module's
+  hosting remaining in place; it does not make the data any fresher, which
+  still dates from 22 April 2026.
+
+- **Changed:** new artwork — the Blish corner icons, the window emblem and the All tab now carry
+  Quarry's own reticle mark instead of the icon inherited from Achievement Tracker. If you run both
+  modules, they no longer share an icon in the taskbar.
+
 ## 2.0.1 — cold-install crash fix (2026-09-15)
 
 - **Fixed:** opening the Target List crashed Blish HUD outright (a stack overflow) the first time it

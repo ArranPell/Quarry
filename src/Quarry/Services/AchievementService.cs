@@ -20,14 +20,11 @@ namespace Quarry.Services
 {
     public class AchievementService : IAchievementService, IDisposable
     {
-        // These three still read Denrage.AchievementTrackerModule on purpose (Batch H Phase 51, 2026-09-14):
-        // the hosted data is Denrage's SSRD static branch, and repointing them needs a bhud-static/<namespace>
-        // branch of our own, which needs the repo public first -- publish-gate item 6 in docs/ROADMAP.md.
-        // Phase 48 already embedded the fourth file (subPages.json) in the .bhm; with three small files
-        // left, "embed these too and stop phoning home" is the alternative to cost at that gate.
-        private const string DataVersionUrl = "https://bhm.blishhud.com/Denrage.AchievementTrackerModule/data/version.json";
-        private const string AchievementDataUrl = "https://bhm.blishhud.com/Denrage.AchievementTrackerModule/data/achievement_data.json";
-        private const string AchievementTablesUrl = "https://bhm.blishhud.com/Denrage.AchievementTrackerModule/data/achievement_tables.json";
+        // Repointed to our own SSRD static branch (bhud-static/ArranPell.Quarry) 2.0.2, 2026-09-20 --
+        // byte-identical mirrors of Denrage's files, so cached installs re-verify without redownloading.
+        private const string DataVersionUrl = "https://bhm.blishhud.com/ArranPell.Quarry/data/version.json";
+        private const string AchievementDataUrl = "https://bhm.blishhud.com/ArranPell.Quarry/data/achievement_data.json";
+        private const string AchievementTablesUrl = "https://bhm.blishhud.com/ArranPell.Quarry/data/achievement_tables.json";
         private const string VersionFileName = "version.json";
         private const string AchievementDataFileName = "achievement_data.json";
         private const string AchievementTablesFileName = "achievement_tables.json";
