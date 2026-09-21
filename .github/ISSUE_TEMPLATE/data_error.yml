@@ -1,0 +1,45 @@
+name: Data error
+description: Quarry is showing wrong or missing achievement/objective data.
+title: "[Data]: "
+labels: ["data-error"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Quarry's achievement data comes from the Guild Wars 2 Wiki, not from Quarry itself. Some errors — a
+        wrong objective order, a stale location — are upstream wiki errors and get fixed there, not here.
+        This template is still the right place to report them; it helps tell wiki bugs from Quarry bugs.
+  - type: input
+    id: achievement
+    attributes:
+      label: Achievement id and name
+      description: The id from the achievement's wiki page or the API, plus its name.
+      placeholder: e.g. 6333 — Character Growth
+    validations:
+      required: true
+  - type: input
+    id: objective
+    attributes:
+      label: Which objective or bit?
+      placeholder: e.g. row 4 / "Collect 10 shards"
+    validations:
+      required: true
+  - type: textarea
+    id: quarry-shows
+    attributes:
+      label: What Quarry shows
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What the game or wiki actually shows
+      description: Include a link to the wiki page if you have one.
+    validations:
+      required: true
+  - type: input
+    id: zone
+    attributes:
+      label: Zone / map
+    validations:
+      required: true

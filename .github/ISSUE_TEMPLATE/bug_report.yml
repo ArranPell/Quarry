@@ -1,0 +1,68 @@
+name: Bug report
+description: Something in Quarry isn't working the way it should.
+title: "[Bug]: "
+labels: ["bug", "needs-info"]
+body:
+  - type: input
+    id: module-version
+    attributes:
+      label: Quarry version
+      description: Manage Modules → Quarry.
+      placeholder: e.g. 2.0.2
+    validations:
+      required: true
+  - type: input
+    id: blish-version
+    attributes:
+      label: Blish HUD version
+      placeholder: e.g. 1.2.0
+    validations:
+      required: true
+  - type: input
+    id: pathing
+    attributes:
+      label: Pathing installed? Which pack and version?
+      description: If you don't use Pathing, say so.
+      placeholder: e.g. Pathing 1.13.2, Lady Elyssa's pack v3.4
+    validations:
+      required: true
+  - type: dropdown
+    id: restarted
+    attributes:
+      label: Did you fully restart Blish HUD after installing or updating Quarry?
+      description: Disable/enable in the module panel does not reload code — only a full restart does.
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log file
+      description: Attach the relevant log from the Blish HUD logs folder (`Documents\Guild Wars 2\addons\blishhud\logs`). Drag the file onto this box.
+    validations:
+      required: false

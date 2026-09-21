@@ -70,3 +70,7 @@ The BlishHUD NuGet package's build targets produce `src\Quarry\bin\Debug\net4.7.
 - The marker-pack authors whose packs Quarry indexes.
 
 MIT. `LICENSE` carries both copyright notices, Denrage's for the original work and ArranPell's for Quarry, and both stay.
+
+The three hosted data files Quarry downloads (`version.json`, `achievement_data.json`, `achievement_tables.json`) are derived from Guild Wars 2 Wiki content. Contributor-written text on the wiki is available under the [GNU Free Documentation License 1.3 (GFDL)](http://www.gnu.org/copyleft/fdl.html); official Guild Wars 2 game content the wiki reproduces (achievement names, descriptions, and other in-game text) remains ArenaNet's and NCSoft's, and is not covered by the GFDL.
+
+Quarry is not affiliated with ArenaNet or NCSoft. Guild Wars 2 is a trademark of NCSoft.

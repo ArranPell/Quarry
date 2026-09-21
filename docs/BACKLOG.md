@@ -12,6 +12,59 @@ what and why, 1–3 lines. Tag who suggested it and when if it isn't obvious.
 
 Product rule still applies to everything here: **bounded sessions, not completeness** (see CLAUDE.md).
 
+## 2.0.x — first maintenance release (collecting)
+
+*Opened 2026-09-20, right after 2.0.2 shipped and the in-game listing PR went in. Unlike the rest of this
+file, this section is a **staging area for one specific release** rather than an idea dump: items here are
+intended, just not yet scheduled into `docs/PLAN.md`. Nothing here is urgent enough to justify a release on
+its own — the trigger is the first real bug report from the in-game audience, and this rides along with it.
+Move items out to PLAN.md when that happens, same rule as the rest of the file.*
+
+**Observability — the Sentry pass.** Blish HUD reports to Sentry automatically; there is no per-module
+configuration and nothing to add to the manifest. What reaches Sentry is unhandled exceptions plus every
+`Logger.Error` / `Logger.Fatal` call we make, so our own log levels are the entire control surface. Blish's
+own guidance (docs/modules/module-citizen/ensuring-stability) is explicit that handled *environmental*
+failures must not be ERROR, because they flood the feed with things the author cannot fix. Phase 56's
+Error→Warn audit caught most of this; these survived, and they only start to matter now that there is an
+audience bigger than one.
+
+- **Downgrade three `Logger.Error` calls to `Warn`.** All three are handled environmental failures that
+  already notify the user through `Debug.Contingency`, so the Error level is duplicate noise that will
+  bury real reports:
+  - `AchievementService.cs:353` and `:377` — "Failed to download achievement data and no cached copy."
+    Network failure, AV interference or a server hiccup on someone's first run. Already calls
+    `NotifyHttpAccessDenied`.
+  - `PersistenceService.cs:184` — "Access denied writing `persistanceStorage.json`." Permissions or AV.
+    Already paired with the Contingency notification Phase 56 added.
+  Leaves 12 `Logger.Error` calls, all of which are genuine coding errors or packaging failures and should
+  stay. No `Logger.Fatal` calls exist and none should be added.
+
+- **Upgrade one `Warn` to `Error`: the Pathing shape mismatch.** `PathingBridge.LogShapeMismatchOnce`
+  (line 173) currently warns, so it never reaches Sentry. But a `CategoryStates` shape mismatch means
+  Pathing changed its internals and **Hunt mode is dead for every user running both modules** — not
+  environmental, not user-fixable, and exactly the thing worth being told about. It is already
+  rate-limited to once per session by `loggedShapeMismatch`, so it cannot flood. Deliberately *not*
+  including `PathingBridge.cs:149` ("failed to locate Pathing module"): that one is environmental
+  (Pathing absent or disabled) and correctly stays Warn.
+
+- **Log the data-file version at load.** Nothing currently logs `version.json`'s `Version` — grep returns
+  zero hits. Now that we serve the files ourselves, "which data version is this user on" is the first
+  question on any data-shaped bug report, and it is the only way to see adoption when we eventually move
+  off v9. One `Info` line in `AchievementService`.
+
+- **Log Quarry's own version at startup.** Our `Logger.Info` lines are all timing and state; none names
+  the module version. Users arriving through the in-game repository auto-update and will not know what
+  version produced the log they paste into a report. *Check first whether Blish already writes module
+  versions into the log at load* — if it does, this is a duplicate and should be dropped rather than added.
+
+**Verified clean, do not re-derive.** A catch-block sweep on 2026-09-20 found no silent-failure gaps.
+Eighteen catch blocks take no logging action; fourteen are `OperationCanceledException` during shutdown
+(correct to swallow), and the rest are deliberate: `PathingBridge` routes through `LogShapeMismatchOnce`,
+`CurrentMapService:163` accumulates into `lastException` and warns once after all floors are tried, and
+`AchievementService.TryDeleteQuietly` swallows a best-effort temp-file delete with a comment saying so.
+No `TEMP`/`HACK`/`FIXME` markers remain in shipped code either — the TEMP logging that
+`PROJECT-HANDOFF` §3 mentions was already removed, so that note is stale.
+
 ## Visual
 
 *All six visual items (progress fill, near-done highlight, richer toast, compact Here window, LW
