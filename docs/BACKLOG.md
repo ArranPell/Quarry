@@ -300,13 +300,17 @@ unscheduled.
   different repo/maintainer than Denrage's, so it doesn't fit the existing upstream-PR workflow above.
 
 *The overlay icon/tab desync, the Track window horizontal-resize bug, the Track window restart-position
-bug, and the partially-tagged-pack suppression bug moved to GitHub Issues #2–#5 on 2026-09-14 (public
+bug, and the partially-tagged-pack suppression bug moved to GitHub Issues #2–#5 on 2026-09-14 (private
 repo — first batch of issues filed to start using GitHub's tracker before going public) and are removed
-here per the rule above.* **Flag for ArranPell: Issue #3 ("Track window's CanResize doesn't reflow content
-horizontally") was filed from a stale base — it predates Batch F, and Phase 42's drag-resize (built on
-`CardGrid`/`Fill`-sizing) is the thing that made resize actually work; ArranPell confirmed it in load-testing
-("the Quarry window drag resize works perfectly"). Worth closing #3 as already fixed rather than leaving
-a stale bug open in a soon-to-be-public tracker — the other three (#2, #4, #5) look genuinely still open.*
+here per the rule above. The horizontal-resize bug (#3) was already closed as fixed — Phase 42's
+drag-resize (built on `CardGrid`/`Fill`-sizing) is what made resize actually work, confirmed by ArranPell
+in load-testing ("the Quarry window drag resize works perfectly"). The other three (#2, #4, #5) were
+genuinely still open, and once the public repo existed with its own issue tracker (2026-09-20), got
+refiled there rather than transferred, to update stale naming (Track window → Target List, tab name →
+Quarry) along the way: `ArranPell/Quarry#2`, `#3`, `#4`. The private originals are closed with cross-links
+to the public issues. **Update, same day:** ArranPell deleted `ArranPell/Quarry#2` (the settings-icon
+desync) as obsolete — a later UI rebuild resolved it — so only `#3` (restart-position reset) and `#4`
+(partially-tagged-pack suppression) are still open and tracked on the public repo.*
 
 `upstream-candidate: bit alignment never ran for the restored tracked set` and `Track window CanResize
 doesn't reflow its children` are both already resolved and archived in `docs/COMPLETED.md` — dropped

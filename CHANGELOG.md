@@ -2,6 +2,12 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.3 — manifest fix for the repo downloader (2026-09-21)
+
+- **Fixed:** the module manifest had no `contributors` field (Batch H's Phase 51 had replaced it with a
+  single-value `author` field instead), which the official repo downloader requires and broke on. Restored
+  `contributors` as a one-element array; the "Authored by" credit itself is unchanged.
+
 ## 2.0.2 — our own data hosting, and Quarry's own mark (2026-09-20)
 
 - **Changed:** the three wiki data files now come from Quarry's own hosting at
