@@ -16,7 +16,7 @@ namespace Quarry.UserInterface
 
         public static BitmapFont TitleFont => GameService.Content.DefaultFont16;
 
-        // Bold exists at 11-18, 20, 22, 24, 36 in Blish 1.2.0 (verified from the shipped font files,
+        // Bold exists at 11-18, 20, 22, 24, 36 in Blish 1.3.0 (verified from the shipped font files,
         // 2026-09-12) -- 18 is the numeral size UI-DESIGN asks for.
         public static BitmapFont NumeralFont => numeralFont ?? (numeralFont = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size18, ContentService.FontStyle.Bold));
 

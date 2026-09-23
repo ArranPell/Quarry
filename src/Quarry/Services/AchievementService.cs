@@ -179,6 +179,20 @@ namespace Quarry.Services
             return false;
         }
 
+        private static string ReadDataVersion(string dataFolder)
+        {
+            try
+            {
+                var metadata = JsonSerializer.Deserialize<AchievementDataMetadata>(System.IO.File.ReadAllText(Path.Combine(dataFolder, VersionFileName)));
+                return metadata is null ? "unknown" : metadata.Version.ToString();
+            }
+            catch (Exception)
+            {
+                // Log-only; the load above has already succeeded without it.
+                return "unknown";
+            }
+        }
+
         private static void TryDeleteQuietly(string path)
         {
             try
@@ -350,6 +364,9 @@ namespace Quarry.Services
 
                         if (!hasCachedFiles)
                         {
+                            // Stays Error (2.0.4, unlike the catch below): DownloadFile only returns false
+                            // when the download worked three times and never matched version.json's md5.
+                            // That points at our published files, not the user's network.
                             this.logger.Error("Failed to download achievement data and no cached copy exists; the module cannot load achievement information. Retrying in 5 minutes.");
                             this.ScheduleLoadRetry(cancellationToken);
                             return;
@@ -374,7 +391,20 @@ namespace Quarry.Services
 
                     if (!hasCachedFiles)
                     {
-                        this.logger.Error(ex, "Failed to download achievement data and no cached copy exists; the module cannot load achievement information. Retrying in 5 minutes.");
+                        // 2.0.4: network and file-access failures are the user's environment, already shown
+                        // to them through Contingency above, so Warn keeps them out of Sentry. Anything
+                        // else thrown here (a bad version.json, a bug of ours) stays Error so we hear of it. A
+                        // cancel is the module unloading mid-download.
+                        const string noDataMessage = "Failed to download achievement data and no cached copy exists; the module cannot load achievement information. Retrying in 5 minutes.";
+                        if (ex is FlurlHttpException || ex is UnauthorizedAccessException || ex is IOException || ex is OperationCanceledException)
+                        {
+                            this.logger.Warn(ex, noDataMessage);
+                        }
+                        else
+                        {
+                            this.logger.Error(ex, noDataMessage);
+                        }
+
                         this.ScheduleLoadRetry(cancellationToken);
                         return;
                     }
@@ -425,7 +455,9 @@ namespace Quarry.Services
 
             // The one startup line kept at Info (Phase 56, review item 27); the per-stage timings above and
             // below are Debug.
-            this.logger.Info($"Startup timing: achievement data ready in {overallStopwatch.ElapsedMilliseconds} ms ({(downloadData ? "downloaded" : "cached")}); {this.Achievements.Count} achievements.");
+            // 2.0.4: the data version is the first question on any data-shaped bug report, and nothing
+            // else in the log answers it. Read from the promoted version.json, i.e. the copy in use.
+            this.logger.Info($"Startup timing: achievement data ready in {overallStopwatch.ElapsedMilliseconds} ms ({(downloadData ? "downloaded" : "cached")}); {this.Achievements.Count} achievements; data version {ReadDataVersion(dataFolder)}.");
 
             this.ManualCompletedAchievements = this.getPersistenceService().Get().ManualCompletedAchievements;
 
@@ -578,8 +610,13 @@ namespace Quarry.Services
                     this.logger.Debug("Refreshing Player Achievements");
                     try
                     {
-                        this.PlayerAchievements = await this.gw2ApiManager.Gw2ApiClient.V2.Account.Achievements.GetAsync(cancellationToken);
-                        this.PlayerAchievementsById = this.PlayerAchievements.ToDictionary(a => a.Id, a => a);
+                        var response = await this.gw2ApiManager.Gw2ApiClient.V2.Account.Achievements.GetAsync(cancellationToken);
+                        var byId = DeduplicateAccountAchievements(response);
+
+                        // Both assigned together, and only once deduplication has succeeded, so a failed
+                        // refresh leaves the previous snapshot in place rather than half of a new one.
+                        this.PlayerAchievements = byId.Values.ToList();
+                        this.PlayerAchievementsById = byId;
 
                         lock (this.ManualCompletedSync)
                         {
@@ -633,6 +670,34 @@ namespace Quarry.Services
                     this.logger.Warn("API key permissions 'account' and 'progression' not granted (yet): achievement progress is unavailable until they are. Normal for a moment at startup, before the subtoken arrives; a problem if it persists.");
                 }
             }
+        }
+
+        // Quarry#5: account/achievements can list the same id twice (seen for the Raid Mentor: Decima and
+        // Ura achievements, 8462 and 8469). ToDictionary threw on that, so every refresh failed and no
+        // progress ever showed. Keep one entry per id: Done beats not done, then higher Current, then the
+        // later entry -- the reporter's in-game Hero Panel matched the second of the two.
+        internal static Dictionary<int, AccountAchievement> DeduplicateAccountAchievements(IEnumerable<AccountAchievement> achievements)
+        {
+            var byId = new Dictionary<int, AccountAchievement>();
+
+            foreach (var achievement in achievements ?? Enumerable.Empty<AccountAchievement>())
+            {
+                if (achievement is null)
+                {
+                    continue;
+                }
+
+                if (byId.TryGetValue(achievement.Id, out var existing)
+                    && (existing.Done && !achievement.Done
+                        || existing.Done == achievement.Done && existing.Current > achievement.Current))
+                {
+                    continue;
+                }
+
+                byId[achievement.Id] = achievement;
+            }
+
+            return byId;
         }
 
         private void TrackAchievementProgress()

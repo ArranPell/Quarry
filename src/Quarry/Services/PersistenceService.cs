@@ -180,8 +180,9 @@ namespace Quarry.Services
                 // Phase 56 (review item 12): Controlled Folder Access on a OneDrive-redirected Documents
                 // folder is the usual cause -- every track/untrack, hide/snooze and window position was
                 // being lost with only a log line to show for it. Blish's dialog de-duplicates by path, so
-                // the 5-minute autosave doesn't nag.
-                this.logger.Error(ex, $"Access denied writing {SAVE_FILE_NAME}; nothing tracked this session will survive a restart.");
+                // the 5-minute autosave doesn't nag. Warn, not Error (2.0.4): the user's environment, not
+                // ours to fix, and the dialog already tells them.
+                this.logger.Warn(ex, $"Access denied writing {SAVE_FILE_NAME}; nothing tracked this session will survive a restart.");
                 Blish_HUD.Debug.Contingency.NotifyFileSaveAccessDenied(file, "save your tracked achievements");
             }
             catch (Exception ex)

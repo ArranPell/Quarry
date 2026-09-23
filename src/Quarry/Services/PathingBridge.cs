@@ -169,8 +169,10 @@ namespace Quarry.Services
                 return;
             }
 
+            // Error, not Warn (2.0.4), so it reaches Sentry: Pathing changed its internals and hunt mode is
+            // dead for everyone running both modules. Once per session, so it can't flood.
             this.loggedShapeMismatch = true;
-            this.logger.Warn(ex, "Pathing bridge: Pathing's CategoryStates shape didn't match what we expect; hunt mode will do nothing until this is fixed.");
+            this.logger.Error(ex, "Pathing bridge: Pathing's CategoryStates shape didn't match what we expect; hunt mode will do nothing until this is fixed.");
         }
     }
 }

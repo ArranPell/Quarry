@@ -93,7 +93,7 @@ namespace Quarry.UserInterface.Windows
 
             this.Emblem = contentsManager.GetTexture("achievement_icon.png");
             // Load-test 2026-09-13: the achievement/objective name here as well as directly under the
-            // title bar was redundant, and at the native title font (32px, confirmed against Blish v1.2.0
+            // title bar was redundant, and at the native title font (32px, confirmed against Blish v1.3.0
             // source) it overran the close button before the name even got interesting -- a fixed label
             // says what the window is instead.
             this.Title = "Inspector";
@@ -675,7 +675,7 @@ namespace Quarry.UserInterface.Windows
             }
         }
 
-        // No bearing arrow: Blish 1.2.0 does expose the avatar's facing vector (GameService.Gw2Mumble.
+        // No bearing arrow: Blish 1.3.0 does expose the avatar's facing vector (GameService.Gw2Mumble.
         // PlayerCharacter.Forward, confirmed against source), but RemainingObjective/NearestObjectiveService
         // carry only a distance, not a world position to compute a bearing from -- adding one is a
         // NearestObjectiveService change, and Batch F rules those out. Distance alone still works.

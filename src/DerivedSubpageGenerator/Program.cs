@@ -2,8 +2,7 @@
 // purpose-built file -- derived_subpages.json -- carrying only what Quarry actually
 // reads out of subPages.json (70 MB): WikiLocationService's coordinates/place-names/Title, and the
 // Inspector's Description/ImageUrl for pages an achievement objective can actually link to. See
-// docs/PLAN.md's Phase 48 and docs/analysis/DATA-INDEPENDENCE-REVIEW-2026-09-13.md §1/§4.1 for why
-// these fields and not others.
+// Phase 48 in docs/COMPLETED.md for why these fields and not others.
 //
 // Run: dotnet run --project src/DerivedSubpageGenerator -- [output-path]
 // Defaults to src/Quarry/ref/derived_subpages.json, which ships in the .bhm (Phase 48's

@@ -9,7 +9,7 @@ namespace Quarry.UserInterface
     // Phase 41. Both windows are now built on a transparent ref/window_blank.png (ConstructWindow only
     // reads its dimensions -- the stretched draw of the old background.png/asset-156006 texture is
     // invisible), so this is the only thing that actually paints their content area. Called from
-    // PaintBeforeChildren, before base.PaintBeforeChildren -- verified against Blish v1.2.0 source:
+    // PaintBeforeChildren, before base.PaintBeforeChildren -- verified against Blish v1.3.0 source:
     // WindowBase2.PaintBeforeChildren paints the (now-blank) background, then the sidebar, then the
     // title bar, so calling this first and the base second lands the native sidebar fade and title bar
     // on top of our body, in the same order the game's own window draws in.

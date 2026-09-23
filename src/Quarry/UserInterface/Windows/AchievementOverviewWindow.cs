@@ -86,7 +86,7 @@ namespace Quarry.UserInterface.Windows
                 : defaultSize;
         }
 
-        // WindowBase2 has no MinSize/MaxSize of its own (verified against Blish v1.2.0 source) -- CanResize's
+        // WindowBase2 has no MinSize/MaxSize of its own (verified against Blish v1.3.0 source) -- CanResize's
         // drag handle would otherwise let the window go arbitrarily small or large. Guarded against
         // re-entrancy: setting Size here re-enters OnResized once, which must see applyingSizeClamp and
         // return rather than clamp again.
@@ -114,7 +114,7 @@ namespace Quarry.UserInterface.Windows
         // Phase 41: window_blank.png made the base stretch invisible; this is what actually paints the
         // content area now. Painted first, then base.PaintBeforeChildren, so the native sidebar fade and
         // title bar land on top -- TabbedWindow2 doesn't override PaintBeforeChildren itself (verified
-        // against Blish v1.2.0 source), so this override is safe to add here.
+        // against Blish v1.3.0 source), so this override is safe to add here.
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
             WindowBodyPainter.PaintBody(spriteBatch, this, this.ContentRegion, showLeftAccent: true);

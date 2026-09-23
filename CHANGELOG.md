@@ -2,6 +2,19 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.4 — progress fix for accounts with duplicate API entries, and better logs (2026-09-23)
+
+- **Fixed:** on some accounts Quarry showed no progress for any achievement, including completed ones
+  ([#5](https://github.com/ArranPell/Quarry/issues/5)). The GW2 API can list the same achievement twice
+  for one account (seen for *Raid Mentor: Decima* and *Raid Mentor: Ura*). Quarry failed on the
+  duplicate and gave up on every refresh. It now keeps the most-progressed of the two entries.
+
+- **Changed:** logging, so real problems stand out in Blish HUD's error reports:
+  - Failures caused by your setup, like a blocked download or a Documents folder Quarry can't write
+    to, are now warnings. They were errors. Blish still shows you its own dialog for them.
+  - Pathing changing in a way that breaks Hunt mode is now an error. It was a warning.
+  - The startup log line now names the achievement data version in use, which helps with bug reports.
+
 ## 2.0.3 — manifest fix for the repo downloader (2026-09-21)
 
 - **Fixed:** the module manifest had no `contributors` field, which the official repo downloader requires.

@@ -27,11 +27,37 @@ to status only on 2026-09-21. The batch summaries it used to repeat are in ROADM
 - **2.0.3 (2026-09-21).** Restored the manifest's required `contributors` field. Without it, Blish's repo
   downloader failed. Quarry now installs from the in-game module repository (DECISIONS 2026-09-21).
 
+## Batch I — 2.0.4 maintenance (active)
+
+Triggered 2026-09-23 by the first public bug report, `ArranPell/Quarry#5`, per the rule in BACKLOG's
+2.0.x section. Written in a cloud session and built there (0 warnings, 0 errors); not yet loaded in
+Blish. Test checklist: `docs/handoff.md`. Branch `claude/quarry-bug-report-5-7cy8bt`, PR #16.
+
+### Phase 57 — Quarry#5: duplicate ids in `account/achievements`
+
+The API returned two entries for one id, `ToDictionary` threw, and every progress refresh failed, so no
+progress showed anywhere. Keep the most-progressed entry per id (DECISIONS 2026-09-23).
+**Status:** built; the dedup method passed 9 cases outside the repo, including the reporter's shape.
+Awaiting the Blish load-test. The duplicate case needs the reporter to confirm (Janthir Wilds content).
+
+### Phase 58 — Sentry pass: log levels and the data version
+
+BACKLOG's 2.0.x Observability items, adjusted after checking the code (DECISIONS 2026-09-23):
+- `PersistenceService` access-denied save: Error → Warn.
+- `AchievementService` first-run download catch: Warn for network, file-access and cancel failures,
+  Error for anything else. The md5-mismatch path at the other call site stays Error.
+- `PathingBridge.LogShapeMismatchOnce`: Warn → Error (once per session).
+- The data version is added to the existing startup Info line.
+- Quarry's own version line was dropped: Blish already logs `Module Quarry (ArranPell.Quarry) vX
+  finished loading.`
+
+**Status:** built; `ReadDataVersion` returned `9` from the hosted `version.json`. Awaiting the Blish
+load-test.
+
 ## What's next
 
-The 2.0.x maintenance items staged at the top of `docs/BACKLOG.md` (log levels for Sentry, version lines
-in the log). The first real bug report will trigger them. Open bugs: `ArranPell/Quarry#3` and `#4`.
-Anything else becomes a phase here when it's picked up from BACKLOG or ROADMAP's RC4.
+After 2.0.4: open bugs `ArranPell/Quarry#3` and `#4`. Anything else becomes a phase here when it's
+picked up from BACKLOG or ROADMAP's RC4.
 
 ## Backlog
 

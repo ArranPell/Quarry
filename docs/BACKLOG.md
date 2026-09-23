@@ -22,44 +22,21 @@ under the same rule as the rest of the file. 2.0.3 (2026-09-21) was an unplanned
 without any of these. They're all still open, and the line numbers below were re-checked against the
 source that day.*
 
-### Observability: the Sentry pass
+### Observability: the Sentry pass — scheduled
 
-Blish HUD reports to Sentry automatically. There's no per-module configuration and nothing to add to the
-manifest. Sentry receives unhandled exceptions plus every `Logger.Error` / `Logger.Fatal` call we make, so
-our own log levels are the only control we have. Blish's own guidance
-(docs/modules/module-citizen/ensuring-stability) says handled environmental failures must not be ERROR,
-because they flood the feed with things the author can't fix. Phase 56's Error→Warn audit caught most of
-these. The ones below survived, and they only start to matter now that there's an audience bigger than
-one.
+Moved to PLAN.md as Batch I, Phase 58 (2026-09-23), triggered by `ArranPell/Quarry#5`. Two follow-ups
+turned up while doing it. Neither is scheduled yet:
 
-- **Downgrade three `Logger.Error` calls to `Warn`.** All three are handled environmental failures that
-  already notify the user through `Debug.Contingency`. At Error level they're duplicate noise that will
-  bury real reports:
-  - `AchievementService.cs:353` and `:377`: "Failed to download achievement data and no cached copy."
-    Network failure, AV interference or a server hiccup on someone's first run. Already calls
-    `NotifyHttpAccessDenied`.
-  - `PersistenceService.cs:184`: "Access denied writing `persistanceStorage.json`." Permissions or AV.
-    Already paired with the Contingency notification Phase 56 added.
-
-  That leaves 12 `Logger.Error` calls. All are coding errors or packaging failures and should stay. There
-  are no `Logger.Fatal` calls, and none should be added.
-
-- **Upgrade one `Warn` to `Error`: the Pathing shape mismatch.** `PathingBridge.LogShapeMismatchOnce`
-  (line 173) warns, so it never reaches Sentry. A `CategoryStates` shape mismatch means Pathing changed
-  its internals, and Hunt mode is dead for every user running both modules. That's not environmental and
-  not user-fixable, and it's the thing worth being told about. It's already rate-limited to once per
-  session by `loggedShapeMismatch`, so it can't flood. `PathingBridge.cs:149` ("failed to locate Pathing
-  module") is left out on purpose. That one is environmental (Pathing absent or disabled) and stays Warn.
-
-- **Log the data-file version at load.** Nothing logs `version.json`'s `Version`; grep returns zero hits.
-  Now that we serve the files ourselves, "which data version is this user on" is the first question on
-  any data-shaped bug report. It's also the only way to see adoption when we eventually move off v9. One
-  `Info` line in `AchievementService`.
-
-- **Log Quarry's own version at startup.** Our `Logger.Info` lines are all timing and state, and none
-  names the module version. Users who arrive through the in-game repository auto-update, so they won't
-  know which version produced the log they paste into a report. Check first whether Blish already writes
-  module versions into the log at load. If it does, this is a duplicate and should be dropped.
+- **The player-achievements refresh catch is Warn for everything.** That's why Quarry#5 never reached
+  Sentry: a coding error (`ArgumentException` from `ToDictionary`) was logged at the same level as a
+  flaky API. Split it the way Phase 58 split the data download: Gw2Sharp's `RequestException` family and
+  cancellation stay Warn, and anything else goes to Error. It needs a once-per-session flag, because the
+  poll retries every 5 minutes and would flood Sentry otherwise. Worth doing, since a silent
+  every-refresh failure is exactly what we'd want to hear about.
+- **A bad publish is invisible to anyone with a cached copy.** When a download never matches
+  `version.json`'s md5, `DownloadFile` warns and the load carries on with the cache. Only a first run
+  with no cache reaches Error. If we ever publish mismatched files, existing users would never report it.
+  Consider Error once per session on the md5-mismatch path whatever the cache state.
 
 ### Verified clean; don't re-check
 
