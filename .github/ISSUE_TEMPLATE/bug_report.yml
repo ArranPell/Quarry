@@ -15,7 +15,7 @@ body:
     id: blish-version
     attributes:
       label: Blish HUD version
-      placeholder: e.g. 1.2.0
+      placeholder: e.g. 1.3.0
     validations:
       required: true
   - type: input
@@ -23,14 +23,14 @@ body:
     attributes:
       label: Pathing installed? Which pack and version?
       description: If you don't use Pathing, say so.
-      placeholder: e.g. Pathing 1.13.2, Lady Elyssa's pack v3.4
+      placeholder: e.g. Pathing 1.13.2, <pack name> v3.4
     validations:
       required: true
   - type: dropdown
     id: restarted
     attributes:
       label: Did you fully restart Blish HUD after installing or updating Quarry?
-      description: Disable/enable in the module panel does not reload code — only a full restart does.
+      description: Disabling and re-enabling Quarry in the module panel doesn't reload its code. Only a full restart does.
       options:
         - "Yes"
         - "No"
@@ -63,6 +63,6 @@ body:
     id: logs
     attributes:
       label: Log file
-      description: Attach the relevant log from the Blish HUD logs folder (`Documents\Guild Wars 2\addons\blishhud\logs`). Drag the file onto this box.
+      description: Attach the log from the Blish HUD logs folder (`Documents\Guild Wars 2\addons\blishhud\logs`) by dragging the file onto this box.
     validations:
       required: false

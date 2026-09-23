@@ -1,426 +1,393 @@
 # Roadmap
 
 > **Reading this in the public repo?** `docs/DECISIONS.md` (the decision log) and `docs/COMPLETED.md`
-> (the completed-phase archive), cited throughout, live in the author's private working repo along with
-> the other archive-only docs. The citations are left as-is: they point at a record that exists, just not
-> here.
+> (the completed-phase archive) are cited throughout. They live in my private working repo, along with
+> the other archive-only docs. The citations stay as they are: they point at a record that exists, just
+> not here.
 
-Written 2026-09-09 after Denrage settled the licence (issue #7); reconciled 2026-09-09 (evening) once
-RC1 shipped and the docs were re-split; **reconciled again 2026-09-11** against PLAN.md after the
-hunter-code review ran and Batch C shipped — this file had drifted a full milestone behind — and
-**corrected the same day** once Batch C's load-test came back confirmed, and again once Phase 29 (RC2's
-last piece) shipped and was confirmed the same day. This file says **what the milestones are and what goes in
-each**. The doc layout around it:
+Written 2026-09-09 after Denrage settled the licence (issue #7), and reconciled that evening once RC1
+shipped and the docs were re-split. Reconciled again 2026-09-11 against PLAN.md after the hunter-code
+review ran and Batch C shipped, because this file had drifted a full milestone behind. Corrected the same
+day once Batch C's load-test came back confirmed, and again once Phase 29 (RC2's last piece) shipped and
+was confirmed. Reconciled again 2026-09-21, after 2.0.3, when the "Where we are" history below was cut to
+a pointer. Tidied 2026-09-22 (stale tenses and pointers only), and edited for voice the same day.
 
-- `docs/PLAN.md` — only what's active or not started, with **Status** lines. Nothing sits here between
-  milestones.
-- `docs/COMPLETED.md` — the historical record: every finished phase verbatim, including load-test
+This file says what the milestones are and what goes in each. The docs around it:
+
+- `docs/PLAN.md`: current status. The releases so far, what's next, and any phase that's active or
+  not started.
+- `docs/COMPLETED.md`: the historical record, with every finished phase verbatim, including load-test
   results. Search it by phase number.
-- `docs/BACKLOG.md` — unscheduled ideas. An idea becomes a PLAN.md phase when picked up and leaves the
-  backlog; this roadmap only *groups* backlog items into milestones, it doesn't schedule them.
-- `docs/DECISIONS.md` — append-only, why we chose what we chose.
+- `docs/BACKLOG.md`: unscheduled ideas. An idea becomes a PLAN.md phase when it's picked up, and leaves
+  the backlog. This roadmap only groups backlog items into milestones; it doesn't schedule them.
+- `docs/DECISIONS.md`: append-only, why we chose what we chose.
 
-**RCs are milestones for ArranPell, not releases.** Each ends with a load-test batch and a stretch of actually
-playing with it. Going public is a separate gate (below), taken when an RC feels worth showing someone,
-not on a date. Product rule unchanged: bounded sessions, not completeness.
+An RC is a milestone for me, not a release. Each one ends with a load-test batch and a stretch of playing
+with it. Going public is a separate gate (below), taken when an RC feels worth showing someone rather than
+on a date. The product rule is unchanged: bounded sessions, not completeness.
 
 ## Where we are
 
 ```
-Upstream PR ✅  →  RC1 ✅  →  hunter-code review ✅  →  Batch C ✅  →  Phase 29 ✅  →  Batch D ✅
-  →  Batch F ✅  →  Batch G ✅  →  Batch E ✅ (RC3 closed)  →  Batch H ✅  →  publish gate ✅ (2.0.0)
-  →  [post-release: SSRD hosting ✅ (2.0.2) ← HERE: SSRD in-game listing, load-test fixes, BACKLOG]
+Upstream PR ✅  →  RC1 ✅  →  RC2 ✅  →  RC3 ✅ (Batches D, F, G, E)  →  Batch H ✅  →  publish gate ✅ (2.0.0)
+  →  2.0.1 ✅  →  2.0.2 ✅ (own hosting)  →  2.0.3 ✅ (in-game repository)  ← HERE: maintenance; RC4 not started
 ```
 
-- **Batch D (Phases 31–34) — done, confirmed in-game 2026-09-11.** In COMPLETED.md.
-- **Batch F — the UI redesign — done, confirmed in-game 2026-09-13.** Our own card grid, card, window
-  body, the Inspector, the Target List, resize, and retiring the old card path — built across eight
-  phases plus four rounds of load-test fixes (Target List layout bugs, Inspector title/chip/navigation
-  fixes, drag-resize added to both windows, new navigation shortcuts between the Quarry and Target List
-  windows). Brief in `docs/UI-DESIGN.md`, reasoning in DECISIONS 2026-09-12 and 2026-09-13, full record
-  in COMPLETED.md.
-- **Batch G — the data batch — done, confirmed in-game 2026-09-14.** Three service changes Batch F ruled
-  out: stopped parsing `achievement_tables.json` at startup (Phase 46), the wiki Notes column in the
-  Inspector (Phase 47), the derived subpage file replacing `subPages.json`'s 70 MB runtime download
-  (Phase 48) — plus one load-test round fixing undecoded HTML entities, a leaking wiki chat-link script,
-  a missing Map-column fallback image, and turning wiki chat-link placeholders and Inspector images into
-  in-app, click-to-copy/expand affordances instead of both sending the player to a browser. Full record
-  in COMPLETED.md.
-- **Batch E — Phase 35, the Here strip — done, confirmed in-game 2026-09-14. RC3 closed on it.** The
-  strip in the Target List, one height function over what's actually visible, the taller top bar with the
-  tinted Quarry shortcut — plus one load-test round (a bigger "+" glyph; the strip no longer sticks on a
-  stale "permissions not granted" when its first fetch beats the subtoken update). Full record in
-  COMPLETED.md.
-- **Batch H — cleanup and public-readiness — done, confirmed in-game 2026-09-14** (the full 13-step
-  checklist including both destructive checks; no regressions). All eight phases on `fork` (`ca8e3de` …
-  `4c1e707`): the module is **Quarry** (`ArranPell.Quarry`); the tree is 9 MB, 73 `.cs` files, one build
-  configuration; the review ran and its 41 findings are fixed. One post-review call by ArranPell: `CLAUDE.md`
-  and `.claude/` are untracked and never ship (`252b7c4`; DECISIONS 2026-09-14). Full record in
-  COMPLETED.md. Phases 49–56 were written
-  in full in PLAN.md: repo purge (87.25 MB of `data/`, `InteractiveMapTest`, a tracked `__pycache__`,
-  and the two docs carrying a third party's private correspondence), 297 KB of unreferenced `ref/`
-  assets plus the csproj's inherited ClickOnce cruft and the solution's x64→Any CPU mismatch, retiring
-  the Denrage names from our own code, the module rename pulled forward from the gate, a dead-code
-  sweep whose size is conditional on Phase 48's Blocker 1 (44 files / 2,508 lines / 19.1 % of the
-  module's C# if that answer is "browser"), the public-readiness review, and the README the repo has
-  never had. **It runs after Batch E**, not before: the review has to cover E's code, and a repo-wide
-  review run ahead of the work buys nits in code about to change. Reasoning in DECISIONS 2026-09-14.
+- Every milestone through the publish gate is done and confirmed in-game. PLAN.md lists the releases
+  since. The public repo is `ArranPell/Quarry`, and Quarry installs from Blish's in-game module repository
+  as of 2.0.3.
+- Upstream PR #8 (Phase 23 bit alignment) is still open, waiting for Denrage's review:
+  https://github.com/Denrage/AchievementTrackerModule/pull/8. That keeps the promise from issue #7.
+- Next: the 2.0.x maintenance items staged at the top of BACKLOG.md, which the first real bug report will
+  trigger, and the two open public bugs (`ArranPell/Quarry#3`, `#4`). RC4 below is a candidate, not a
+  commitment.
 
-- **Upstream PR — done.** Phase 23 bit alignment ported to Denrage's module; PR opened 2026-09-09 and
-  still open awaiting Denrage's review: https://github.com/Denrage/AchievementTrackerModule/pull/8. The
-  promise from issue #7 is kept.
-- **RC1 — done, confirmed 2026-09-09.** Details below.
-- **Hunter-code review — ran 2026-09-09.** Its findings became **Phase 24**; see "Code review".
-- **Batch C = Phases 24–28, built 2026-09-09**, plus **Phase 30** and its follow-ups (fixes from ArranPell's
-  Batch C run) built 2026-09-10. **All confirmed in-game by ArranPell 2026-09-10**, the whole `docs/handoff.md`
-  checklist walked end to end; the phases are in COMPLETED.md and the docs were committed 2026-09-11.
-  PLAN.md owns the per-phase Status lines.
-- **Phase 29 — done, confirmed in-game by ArranPell 2026-09-11.** RC2's last piece; both new guidance tiers
-  (sector-match `Coordinate` and `Area`) verified live, after four same-session follow-up fixes (two wiki
-  place-name bugs, a Track-window visibility gap, an Area-tier wording fix). Full story in COMPLETED.md.
-- **RC3 designed 2026-09-11** as two batches, then a third (F) inserted the same day and reshaped into
-  the UI redesign on 2026-09-12, and a fourth (G, the data batch) scheduled 2026-09-13. Batch D, Batch F
-  and Batch G are all done. **Batch E was written up in full 2026-09-14 and collapsed from two phases to
-  one** — Phase 36's toggle set is retired (DECISIONS 2026-09-14). **Batch E is done and confirmed
-  2026-09-14; RC3 is closed. Batch H is done and confirmed 2026-09-14. The publish gate was taken
-  2026-09-15: `ArranPell/Quarry` is public, release v2.0.0 carries `Quarry.bhm`.** The SSRD contributor
-  account arrived 2026-09-19 and **hosting is done — 2.0.2, 2026-09-20** (gate item 6). Next action: the
-  in-game listing, then whatever the first public users report.
+What each batch built, and its load-test rounds, is in COMPLETED.md under the batch name. The reasoning is
+in DECISIONS.md under its date. The milestone sections below say what each RC contained.
 
 ## RC1 — The hunter exists ✅ (Phases 15, 16, 17 — all in COMPLETED.md)
 
-The module stopped being a tracker with a Here tab. What actually landed:
+The module stopped being a tracker with a Here tab. What landed:
 
-- **Phase 15 — pack ingest.** `IMarkerPackIndexService`/`MarkerPackIndexService` on **TmfLib 2.2.5**
-  (option 1 of the plan's parser decision; two TmfLib API deviations found and worked around before
-  coding — see DECISIONS 2026-09-09 and handoff.md). Cached `markerPackIndex.json`, schema v2. Here
-  consumer shipped: union of the category and index sources, `Guided` label on the card,
-  `NoCategoryForMap` only when both sources are empty.
-- **Phase 16 — hunt mode.** `PathingBridge` by reflection (three members; the manifest-dependency and
-  compile-time-reference options were both rejected — DECISIONS 2026-09-09), `HuntService` with the
-  "only revert what we flipped, and only if nothing else needs it" rule, settings `HuntMode` /
-  `AutoUntrackCompleted` / `HuntRevertOnUnload`, completion toast, Here-card peek button. **The Phase 10
-  Pathing probe is deleted.** Absorbed the backlog's auto-untrack item.
-- **Phase 17 — nearest objective.** `NearestObjectiveService`, `ObjectiveGeometry` (the `(x, z, y)`
-  transpose; no distance conversion needed — pack coords are Mumble-space metres), "Next: <name> · N m"
-  on full Track panels with waypoint copy, 2 s accumulator gated on `Visible`.
-- **Post-batch play fixes (2026-09-09), both from real hunting:** prefer bit-tagged objectives over
-  untagged ones on the same achievement+map (the Auric Basin masks problem — an untagged breadcrumb trail
-  kept winning "nearest" and sent the player to cleared ground), plus `NearestWaypoint` never checking
-  completion state at all; and row-number prefixes on remaining-objective names so similar-sounding steps
-  can be told apart. Both in DECISIONS.
+- **Phase 15, pack ingest.** `IMarkerPackIndexService`/`MarkerPackIndexService` on TmfLib 2.2.5, option 1
+  of the plan's parser decision. Two TmfLib API deviations were found and worked around before coding
+  (DECISIONS 2026-09-09). The cache is `markerPackIndex.json`, schema v2. The Here consumer shipped with
+  it: it takes the union of the category and index sources, shows a `Guided` label on the card, and
+  reports `NoCategoryForMap` only when both sources are empty.
+- **Phase 16, hunt mode.** `PathingBridge` works by reflection, on three members. The manifest-dependency
+  and compile-time-reference options were both rejected (DECISIONS 2026-09-09). `HuntService` follows the
+  rule "only revert what we flipped, and only if nothing else needs it". The phase added the settings
+  `HuntMode`, `AutoUntrackCompleted` and `HuntRevertOnUnload`, the completion toast and the Here-card peek
+  button. The Phase 10 Pathing probe is deleted. It also absorbed the backlog's auto-untrack item.
+- **Phase 17, nearest objective.** `NearestObjectiveService`, and `ObjectiveGeometry` for the `(x, z, y)`
+  transpose. Pack coordinates are Mumble-space metres, so no distance conversion is needed. Full Track
+  panels show "Next: <name> · N m" with waypoint copy, on a 2 s accumulator gated on `Visible`.
+- **Post-batch play fixes (2026-09-09).** Both came from hunting. First, bit-tagged objectives now beat
+  untagged ones on the same achievement and map. This was the Auric Basin masks problem: an untagged
+  breadcrumb trail kept winning "nearest" and sent the player to cleared ground. The same fix made
+  `NearestWaypoint` check completion state, which it never had. Second, remaining-objective names get
+  row-number prefixes, so similar-sounding steps can be told apart. Both are in DECISIONS.
 
-## RC2 — Here covers multi-map achievements — ✅ **done, confirmed 2026-09-11**
+## RC2 — Here covers multi-map achievements ✅ (done, confirmed 2026-09-11)
 
 The original pain: achievements whose sub-objectives span several maps never appeared in Here, because
 Here worked from a single category→map link. Phase 15's index fixed that for every pack-tagged
-achievement, and Phase 17 delivered the per-map presentation ("Next" for routes here, "Not on this map"
-for routes elsewhere) that was RC2's polish item. That answered the original pain, but RC2 then grew real content of
-its own — the guidance tiers, the threshold and the wiki-location hint — which shipped as Phases 26,
-27, 28 and (2026-09-11) **29**, RC2's last piece:
+achievement. Phase 17 delivered the per-map presentation that was RC2's polish item: "Next" for routes
+here, "Not on this map" for routes elsewhere. RC2 then grew content of its own: the guidance tiers, the
+threshold and the wiki-location hint. They shipped as Phases 26, 27, 28 and, on 2026-09-11, 29, RC2's
+last piece.
 
-- **Measurement, no code: what still doesn't show?** RC1 has been played with; the misses to log are
-  achievements ArranPell actually hunts that *no* pack covers. The play session so far surfaced pack-data
-  quality issues (tagged vs untagged), not coverage gaps — which is weak evidence that coverage is
-  adequate. Keep noting misses in BACKLOG.md as they come up rather than opening a phase.
+- **Measurement, no code: what still doesn't show?** RC1 has been played with. The misses to log are
+  achievements I hunt that no pack covers. So far, play has turned up pack-data quality issues (tagged vs
+  untagged) rather than coverage gaps. That's weak evidence that coverage is adequate. Misses go in
+  BACKLOG.md as they come up; they don't open a phase.
 - **The wiki-derived spike answered yes, and shipped.** The source is `subPages.json`, not
-  `achievement_tables.json` (the first measurement used the wrong file and concluded no). **Tier 1 —
-  exact `InteractiveMap.Coordinates` — shipped as Phase 28.** Note that the coverage numbers once quoted
-  here (5.6 % of rows, 58 achievements ≥50 %, 48 at 100 %) were **superseded when Phase 28 re-measured
-  on the join the module actually performs** (`achievement_data.json` EntryList rows): **379 of 20,914
-  rows (1.8 %) carry a coordinate, 31 achievements have one on every row, 66 on at least half.** Same
-  shape — bimodal, hunt-shaped, opportunistic rather than a general fallback — smaller headline number.
-  Use PLAN.md Phase 28's figures, not these.
-- **Tier 2 — shipped and confirmed as Phase 29 (2026-09-11).** Area-named rows resolve against
-  the map's **sectors** (`/v2/continents/:c/floors/:f/regions/:r/maps/:m` returns each sector's `name`
-  and `coord`), so they yield real coordinates and a real countdown — **tier-1 quality, not the
-  no-distance tier this roadmap originally imagined**. It covers the Explorer achievements, which
-  nothing we shipped before this touched. Confirmed live on real account data: `Zone Defense` (Caledon
-  Forest) for the `Area` fallback, `Spiritual Childcare` (Seitung Province, Daigo Ward) for the
-  sector-match `Coordinate` path. Took four load-test fixes to get there — full story in COMPLETED.md.
-- **No re-scrape needed for the above** — that conclusion belonged to the tables-only measurement. The
-  scraper-quality finding still stands on its own (`Closest landmark` cells in the tables leak the wiki's
-  chat-link copy JS, so those codes exist on the wiki and are being dropped), but it's now a data-quality
-  item under "Later", not a blocker for RC2.
-
-- **Guidance-level badge + guided-only threshold — shipped as Phases 26 and 27.** The badge is a tier
+  `achievement_tables.json`. The first measurement used the wrong file and concluded no. Tier 1, exact
+  `InteractiveMap.Coordinates`, shipped as Phase 28. The coverage numbers once quoted here (5.6 % of rows,
+  58 achievements ≥50 %, 48 at 100 %) were superseded when Phase 28 re-measured on the join the module
+  performs (`achievement_data.json` EntryList rows). On that join, 379 of 20,914 rows (1.8 %) carry a
+  coordinate, 31 achievements have one on every row, and 66 have one on at least half. The shape is the
+  same: bimodal, hunt-shaped, and opportunistic rather than a general fallback. Only the headline number
+  is smaller. Use COMPLETED.md Phase 28's figures, not the old ones.
+- **Tier 2 shipped and was confirmed as Phase 29 (2026-09-11).** Area-named rows resolve against the
+  map's sectors: `/v2/continents/:c/floors/:f/regions/:r/maps/:m` returns each sector's `name` and
+  `coord`. That gives these rows coordinates and a countdown, so they reach tier-1 quality instead of the
+  no-distance tier this roadmap first imagined. It covers the Explorer achievements, which nothing we'd
+  shipped before had touched. Confirmed live on my account data: `Zone Defense` (Caledon Forest) for the
+  `Area` fallback, and `Spiritual Childcare` (Seitung Province, Daigo Ward) for the sector-match
+  `Coordinate` path. It took four load-test fixes to get there. The full story is in COMPLETED.md.
+- **No re-scrape is needed for the above.** That conclusion belonged to the tables-only measurement. The
+  scraper-quality finding still stands on its own: `Closest landmark` cells in the tables leak the wiki's
+  chat-link copy JS, so those codes exist on the wiki and are being dropped. It's now a data-quality item
+  under "Later", not a blocker for RC2.
+- **Guidance-level badge and guided-only threshold, shipped as Phases 26 and 27.** The badge is a tier
   (`* Guided` / `+ Coords` / `~ Route` / `· Area` / none), computed per achievement per map over
-  remaining bits only; the filter is a threshold (`HereGuidanceFilter`, default `Everything`) applied to
-  **Here only**. The design questions this entry left open were all settled in DECISIONS 2026-09-09:
-  glyph + word + colour never colour alone, trail-only is **neutral not red**, threshold not boolean.
-  All four colours live in one `GuidanceStyle` class.
-- **Two honesty fixes — shipped as Phase 25.** `IgnoreNearlyComplete` (424 of 1,112) demoted rather than
-  hidden in the Nearest-to-done sort with an AP tie-break, and Here no longer suggests achievements that
-  are `RequiresUnlock` (244) or have unmet `prerequisites` (137).
+  remaining bits only. The filter is a threshold (`HereGuidanceFilter`, default `Everything`) applied to
+  Here only. DECISIONS 2026-09-09 settled the design questions this entry left open: glyph, word and
+  colour together, never colour alone; trail-only is neutral, not red; a threshold, not a boolean. All
+  four colours live in one `GuidanceStyle` class.
+- **Two honesty fixes, shipped as Phase 25.** `IgnoreNearlyComplete` achievements (424 of 1,112) are
+  demoted in the Nearest-to-done sort instead of hidden, with an AP tie-break. Here no longer suggests
+  achievements that are `RequiresUnlock` (244) or have unmet `prerequisites` (137).
 
-RC2 is closed: Phase 29 shipped and was confirmed in-game 2026-09-11, and Batch C's half was confirmed
-2026-09-10. Ongoing, not a blocker: keep noting any coverage misses ArranPell actually hunts into BACKLOG.md
-as they come up rather than reopening this milestone.
+RC2 is closed. Phase 29 shipped and was confirmed in-game 2026-09-11, and Batch C's half was confirmed
+2026-09-10. Ongoing, and not a blocker: coverage misses I hunt go into BACKLOG.md as they come up, without
+reopening this milestone.
 
-## RC3 — The hunt loop made good — ✅ **done, closed 2026-09-14** (designed 2026-09-11)
+## RC3 — The hunt loop made good ✅ (closed 2026-09-14, designed 2026-09-11)
 
-**Two load-test batches** (ArranPell's call, 2026-09-11 — see DECISIONS). The list half first, the
-in-play-UI half second, because the exit criterion is about the second and it's better tested against a
-Here list that already behaves. Scheduled items have left BACKLOG.md per the rule; PLAN.md owns their
-status.
+I split RC3 into two load-test batches (2026-09-11, see DECISIONS). The list half came first and the
+in-play UI half second. The exit criterion is about the second half, and that's better tested against a
+Here list that already behaves. The scheduled items left BACKLOG.md when they became phases, and their
+records are in COMPLETED.md.
 
-**Batch D — Phases 31–34, the Here list becomes something you act on** (PLAN.md has the full text):
+**Batch D, Phases 31–34: the Here list becomes something you act on** (full text in COMPLETED.md):
 
-1. **Phase 31 — Hide / snooze from Here.** Two actions: *Not interested* (permanent) and *Not today*
-   (until 00:00 UTC reset). Owned by a new `HereExclusionService` so it survives `PersistanceService`'s
-   rebuild-on-save; applies to Here and the toast, never to the category tree or the Track window.
-   Un-hide via a "Show hidden (N)" toggle in Here.
-2. **Phase 32 — Track top N.** "Track these" fills the free tracked slots from Here's ranked list, never
-   untracks. One click arms a whole map's hunt (Phase 16 flips the routes).
-3. **Phase 33 — four half-slices:** Here cap as a 5–15 slider (default 10); an **"Anywhere: closest to
-   done"** section under Here (candidate set = started-but-not-done account records, same rules, same
-   cap); session summary names on hover; card grid columns from window width (build-time only).
-4. **Phase 34 — roaming achievements are opportunistic.** No `bits` ⇒ out of the ranked cap, into a
-   "While you're here" line capped at 5. Enemy locations explicitly not promised (11 % coverage).
-   First to drop if D runs long.
+1. **Phase 31, hide / snooze from Here.** Two actions: *Not interested* (permanent) and *Not today*
+   (until the 00:00 UTC reset). A new `HereExclusionService` owns them, so they survive
+   `PersistanceService`'s rebuild-on-save. They apply to Here and the toast, never to the category tree
+   or the Track window. Un-hide is a "Show hidden (N)" toggle in Here.
+2. **Phase 32, track top N.** "Track these" fills the free tracked slots from Here's ranked list, and
+   never untracks. One click arms a whole map's hunt, with Phase 16 flipping the routes.
+3. **Phase 33, four half-slices.** The Here cap as a 5–15 slider (default 10). An "Anywhere: closest to
+   done" section under Here, whose candidates are started-but-not-done account records under the same
+   rules and cap. Session summary names on hover. Card grid columns from window width (build-time only).
+4. **Phase 34, roaming achievements are opportunistic.** An achievement with no `bits` leaves the ranked
+   cap and goes into a "While you're here" line capped at 5. Enemy locations aren't promised (11 %
+   coverage). This phase was first to drop if D ran long.
 
-**Batch F — Phases 38–45, the UI redesign — done, confirmed in-game 2026-09-13** (inserted 2026-09-11 as
-"own card grid and card", reshaped 2026-09-12 into the full redesign after ArranPell's screenshot comparison
-with the in-game Hero panel, settled 2026-09-13 against two rounds of mockups; ran **before** E so E
-lands on primitives we own). Full record, including the four load-test rounds, in COMPLETED.md:
+**Batch F, Phases 38–45: the UI redesign. Done, confirmed in-game 2026-09-13.** It was inserted
+2026-09-11 as "own card grid and card". On 2026-09-12, after I compared screenshots with the in-game Hero
+panel, it grew into the full redesign, which was settled 2026-09-13 against two rounds of mockups. It ran
+before E so that E would land on primitives we own. The full record, including the four load-test rounds,
+is in COMPLETED.md:
 
-5. **Phase 38 — `CardGrid`** (built), **39 — `UiStyle` tokens + text pass** (was Phase 37, pulled
-   forward), **40 — `AchievementCard`** (replaces `DetailsButton`: rank, place + distance, objective
-   pips, tier edge), **41 — `WindowBodyPainter`** (a flat body under the native title bar/tabs; the
-   stretched background was the "low-res texture" complaint) **+ the Quarry / Target List window
-   copy**, **45 — the Inspector** (one detail pane replacing the detach and subpage pop-outs; objective
-   chips with API-confirmed vs ticked-by-you states), **43 — the Target List** (compact rows only, with
-   the nearest objective, bearing and distance; full mode retired), **42 — size to content + resize**,
-   **44 — retire the old paths**. Brief: `docs/UI-DESIGN.md`. Text will be better, not game-crisp —
-   Blish 1.2.0's bitmap fonts through a 0.81× transform at ArranPell's Interface Size are the ceiling.
+5. Phase 38, `CardGrid` (built). Phase 39, `UiStyle` tokens and a text pass (was Phase 37, pulled forward).
+   Phase 40, `AchievementCard`, which replaces `DetailsButton` and shows rank, place and distance, objective
+   pips and a tier edge. Phase 41, `WindowBodyPainter`, a flat body under the native title bar and tabs,
+   plus the Quarry / Target List window copy. The stretched background it replaced was the "low-res texture"
+   complaint. Phase 45, the Inspector: one detail pane replacing the detach and subpage pop-outs, with
+   objective chips that show API-confirmed vs ticked-by-you states. Phase 43, the Target List: compact rows
+   only, with the nearest objective and its distance, and full mode retired. The bearing arrow the brief
+   planned wasn't built (see below). Phase 42, size to content and resize. Phase 44, retire the old paths.
+   The brief is `docs/UI-DESIGN.md`. Text would be better, but not game-crisp: Blish 1.3.0's bitmap fonts
+   through a 0.81× transform at my Interface Size are the ceiling.
 
-**Batch E — Phase 35, the Here strip in the Target List — done, confirmed in-game 2026-09-14** (in COMPLETED.md):
+**Batch E, Phase 35: the Here strip in the Target List. Done, confirmed in-game 2026-09-14** (in
+COMPLETED.md):
 
-6. **Phase 35 — the Here strip, one derived height, and a top bar that carries the Quarry shortcut.**
-   Three pieces, one build. The strip is what lets a new target be picked up without opening Quarry,
-   which is what RC3's exit criterion actually requires; the height function makes the window's height
-   follow what is visible (today an 18 px summary band is reserved whether or not there's a summary);
-   the top bar grows 22 → 28 px and tints the Quarry shortcut so the escape hatch to the full list is
-   findable.
-7. ~~**Phase 36 — compact row toggles with one height function**~~ — **retired 2026-09-14.** Batch F's
-   Phase 43 left four of its six toggles with nothing to toggle, and Phase 42/43's user-resizable window
-   was the real fix behind the height function. No toggles ship (ArranPell); DECISIONS 2026-09-14.
-8. ~~**Phase 37 — contrast, background, token set**~~ — moved into Batch F as Phase 39 (2026-09-12).
+6. **Phase 35, the Here strip, one derived height, and a top bar that carries the Quarry shortcut.**
+   Three pieces, one build. The strip lets you pick up a new target without opening Quarry, which RC3's
+   exit criterion requires. The height function makes the window's height follow what's visible. Before
+   it, an 18 px summary band was reserved whether or not there was a summary. The top bar grows from 22
+   to 28 px and tints the Quarry shortcut, so the way back to the full list is easy to find.
+7. Phase 36, compact row toggles with one height function. Retired 2026-09-14. Batch F's Phase 43 left
+   four of its six toggles with nothing to toggle, and the user-resizable window from Phases 42/43 was the
+   fix the height function was after. I decided no toggles ship (DECISIONS 2026-09-14).
+8. Phase 37, contrast, background, token set. Moved into Batch F as Phase 39 (2026-09-12).
 
-**Still on RC3's list, not in a batch, and explicitly not riding E** (ArranPell, 2026-09-14):
-**buyable-item marking** on remaining-item lines — one cached `/v2/commerce/prices` batch; only ~4 % of
-collection item bits are tradeable, so a shortcut finder over a small set, skins/minipets unmarked
-(BACKLOG has why) — and the **bearing arrow**, which needs a player→objective world position
-`NearestObjectiveService` doesn't expose. Both stay in BACKLOG as the first candidates after RC3.
+Two items stayed on RC3's list without joining a batch, and on 2026-09-14 I kept them out of E:
 
-RC3 closes when: ArranPell plays a session using only the Target List, the Inspector and toasts, and doesn't
-miss the Quarry window. **Closed 2026-09-14 on Batch E's confirmation.**
+- Buyable-item marking on remaining-item lines, from one cached `/v2/commerce/prices` batch. Only ~4 % of
+  collection item bits are tradeable, so it's a shortcut finder over a small set, with skins and minipets
+  unmarked (BACKLOG has why).
+- The bearing arrow, which needs a player→objective world position that `NearestObjectiveService` doesn't
+  expose.
+
+Both stay in BACKLOG as the first candidates after RC3.
+
+RC3 closes when I play a session using only the Target List, the Inspector and toasts, and don't miss the
+Quarry window. It closed 2026-09-14 on Batch E's confirmation.
 
 ## RC4 (candidate) — The module becomes a producer, not just a consumer
 
-Not committed, but this is where the project stops being "a tracker plus routes" and becomes something no
-other module does. All three are in BACKLOG.md with feasibility notes; sequence matters because each one
-feeds the next.
+This isn't committed. It would take the project past "a tracker plus routes" to something no other module
+does. All three items were written up 2026-09-14, with feasibility notes, and are tracked privately. The order
+matters, because each one feeds the next.
 
-1. **Pin a location while you play** — right-click a remaining bit, store the current Mumble position.
-   Zero data dependency, fixes the core-Tyria tail by hand, and is the input the next item needs when the
-   wiki has nothing.
-2. **★ Generate a personal marker pack from what you're hunting** — emit a `.taco` tagged with
-   `achievementId`/`achievementBit` into Pathing's markers folder, and Pathing renders it in-world *and
-   hides each icon as you complete its bit*. This upgrades our own yellow tier to green and makes the
-   module a producer of pack data. The open risk is height: wiki coordinates are 2-D, so `zpos` is a guess —
-   prove the mitigation on ~10 objectives before committing.
-3. **Route mode** — order the map's remaining objectives into a walk, waypoint hop when a leg is long,
-   optional time-box. The product rule taken literally: not "here are 10 things" but "here is the loop".
+1. **Pin a location while you play.** Right-click a remaining bit to store the current Mumble position.
+   It has no data dependency, fixes the core-Tyria tail by hand, and gives the next item its input when
+   the wiki has nothing.
+2. **★ Generate a personal marker pack from what you're hunting.** Write a `.taco` tagged with
+   `achievementId`/`achievementBit` into Pathing's markers folder. Pathing renders it in-world and hides
+   each icon as you complete its bit. That upgrades our own yellow tier to green and makes the module a
+   producer of pack data. The open risk is height. Wiki coordinates are 2-D, so `zpos` is a guess. Prove
+   the mitigation on ~10 objectives before committing.
+3. **Route mode.** Put the map's remaining objectives in walking order, with a waypoint hop wherever a leg
+   is long and an optional time limit. Ten things to do becomes one loop to run.
 
-## External — pack author collaboration (started 2026-09-10)
+## Standing decision — no-overlay mode
 
-Not a milestone and not ours to schedule, but it can change the tiers underneath RC2 more than any code we
-write: the Lady Elyssa pack author agreed to add `achievementId` to her 73 untagged categories and to take
-help with `achievementBit`, which would move whole achievements from trail-only to fully tagged for every
-consumer of her pack. We owe two generated artefacts (the 73-category list; a bit-mapping sample), waiting
-on her answers about format and source. Details, her constraints and the notes on her `GW2WikiTool` live in
-`docs/PACK-AUTHOR-OUTREACH.md`.
-
-Also raised there and worth a deliberate answer: **no-overlay mode** — some people will run this without
-Pathing on purpose, so pack-less should be a supported mode rather than a degraded one (BACKLOG has the
-implications). It argues permanently against making Pathing a hard dependency.
+Some people will run Quarry without Pathing by choice, so pack-less should be a supported mode, not a
+degraded one. That argues permanently against making Pathing a hard dependency.
 
 ## Resize — resolved (worked around) by Batch F, 2026-09-13
 
-Was "the resize mystery": real resize handles gated on an unexplained failure where `CanResize` reflowed
-a window's height but not its width. Batch F's `CardGrid` (Phase 38) and its `Fill`-sizing children
-(Phase 42) sidestep the failing code path entirely — width is computed from `ContentRegion` on every
-layout pass instead of being assigned once — and ArranPell confirmed drag-resize "works perfectly" on both
-the Quarry and Target List windows. The original root cause is still unexplained (nobody attached a
-debugger), but nothing depends on knowing it any more. Full story in COMPLETED.md's "Resolved backlog
-items". The intermittent corner-reset-on-restart bug this was paired with is untouched — see BACKLOG.md.
+This was "the resize mystery". Resize handles were blocked on an unexplained failure: `CanResize`
+reflowed a window's height but not its width. Batch F's `CardGrid` (Phase 38) and its `Fill`-sizing
+children (Phase 42) avoid the failing code path. Width is computed from `ContentRegion` on every layout
+pass instead of being assigned once. I confirmed drag-resize "works perfectly" on both the Quarry and
+Target List windows. The root cause is still unexplained, since nobody attached a debugger, but nothing
+depends on it any more. The full story is in COMPLETED.md's "Resolved backlog items". The intermittent
+corner-reset-on-restart bug this was paired with is still open, as `ArranPell/Quarry#3`.
 
-## Data independence — **Batch G, Phases 46–48 — done, confirmed in-game 2026-09-14**
+## Data independence — Batch G, Phases 46–48 — done, confirmed in-game 2026-09-14
 
-Measured on 2026-09-12 and checked against the C# on 2026-09-13 —
-`docs/analysis/DATA-INDEPENDENCE-FINDINGS-2026-09-12.md` and
-`docs/analysis/DATA-INDEPENDENCE-REVIEW-2026-09-13.md`. Two of the three pieces turned out to be worth
-doing on their own merits regardless of whether the hosting risk ever lands: **46** (stopped
-deserializing 20.7 MB of `achievement_tables.json` on every start, when nothing displayed it), **47**
-(the wiki Notes column — 9,051 hand-written hunter notes, 0.22 MB gzipped, in the Inspector). **48** (the
-derived subpage file) is the data-independence phase proper: `subPages.json`'s 70 MB runtime download is
-gone, replaced by a ~1.2 MB file embedded in the `.bhm`. Full record, including the load-test round, in
-COMPLETED.md.
+Measured 2026-09-12 and checked against the C# on 2026-09-13. Two of the three pieces were worth doing on
+their own merits, whether or not the hosting risk ever lands. Phase 46 stopped deserializing 20.7 MB of
+`achievement_tables.json` on every start, when nothing displayed it. Phase 47 put the wiki Notes column in
+the Inspector: 9,051 hand-written hunter notes, 0.22 MB gzipped. Phase 48, the derived subpage file, is the
+data-independence phase proper. `subPages.json`'s 70 MB runtime download is gone, replaced by a ~1.2 MB file
+embedded in the `.bhm`. The full record, including the load-test round, is in COMPLETED.md.
 
-The hosting risk is **half-closed as of 2026-09-20** (2.0.2): the three files are now served from our
-own `bhud-static/ArranPell.Quarry` branch rather than Denrage's namespace — see publish-gate item 6. But
-they are byte-for-byte mirrors, so the *staleness* half is untouched: `last-modified 2026-04-22`, still
-v9, five months of drift. **We control serving, not generating.** What the review changed about the
-answer:
+Half the hosting risk closed on 2026-09-20 (2.0.2). The three files are now served from our own
+`bhud-static/ArranPell.Quarry` branch instead of Denrage's namespace (see publish-gate item 6). They're
+byte-for-byte mirrors, though, so the staleness half is untouched: `last-modified 2026-04-22`, still v9,
+five months of drift. We serve the files but can't regenerate them. What the review changed:
 
-- **Leanness is a smaller job than this section claimed, and a differently shaped one.** The Inspector
-  reads exactly two subpage fields (`Description`, `ImageUrl`); the location index reads coordinates plus
-  five `DescriptionList` keys. The old "0.53 MB" figure and the 2026-09-12 "0.90 MB" figure used
-  different place-key sets and **neither matches the module's own** — re-measure before claiming a size.
+- **Making the data leaner is a smaller job than this section claimed, and a different one.** The
+  Inspector reads two subpage fields (`Description`, `ImageUrl`). The location index reads coordinates
+  plus five `DescriptionList` keys. The old "0.53 MB" figure and the 2026-09-12 "0.90 MB" figure used
+  different place-key sets, and neither matches the module's own. Re-measure before claiming a size.
 - **Running `Gw2WikiDownloader` ourselves is more work than the cadence plan assumes.** It scrapes
-  rendered HTML rather than `api.php`, requires a `cookies.txt` at startup, has its achievement-data and
-  tables paths commented out (a run as committed writes only `subPages.json`), and **produces no
-  `version.json` and computes no md5s** — the thing the module verifies against is not in this repo.
-  That piece has to be written before any GitHub Action can deploy something the module will accept.
-- **Cadence is unchanged and still unscheduled**: releases rather than the calendar, a monthly Action
-  plus an on-demand run after each release, a `generated` stamp in `version.json`. BACKLOG keeps it.
+  rendered HTML rather than `api.php`, and requires a `cookies.txt` at startup. Its achievement-data and
+  tables paths are commented out, so a run as committed writes only `subPages.json`. It produces no
+  `version.json` and computes no md5s, which is what the module verifies against, so that piece isn't in
+  this repo. It has to be written before any GitHub Action can deploy something the module will accept.
+- **Cadence is unchanged and still unscheduled.** Releases rather than the calendar, a monthly Action
+  plus an on-demand run after each release, and a `generated` stamp in `version.json`. BACKLOG keeps it.
 
-Still in BACKLOG.md and still unscheduled: vendored snapshot fallback in the `.bhm`; disk-persisted API
-cache and the AP tie-break follow-up; retry/backoff on batch failures. (SSRD `bhud-static` hosting left
-this list on 2026-09-20 — done, gate item 6.)
+Still in BACKLOG.md and still unscheduled: a vendored snapshot fallback in the `.bhm`; the disk-persisted
+API cache and the AP tie-break follow-up; retry/backoff on batch failures. SSRD `bhud-static` hosting left
+this list on 2026-09-20, done as gate item 6.
 
-## Publish gate — separate from the RCs
+## Publish gate — separate from the RCs — ✅ closed 2026-09-20
 
 Taken when an RC feels worth showing someone (Denrage, the Blish Discord), not tied to a number. Every
-item is in BACKLOG.md Housekeeping; this is the checklist.
+item is in BACKLOG.md Housekeeping. This is the checklist.
 
-**Reconciled 2026-09-14: items 1, 2, 4, 5 and 8 moved into Batch H** and are no longer specified here —
-PLAN.md's Phases 49–56 own them. What is left below is release mechanics, which genuinely belong at the
-gate because they depend on the repo already being public or on a decision only the release forces.
+Reconciled 2026-09-14: items 1, 2, 4, 5 and 8 moved into Batch H and aren't specified here. Batch H's Phases
+49–56 covered them, and their records are in COMPLETED.md. What's left below is release mechanics. Those
+belong at the gate because they depend on the repo already being public, or on a decision only the release
+forces.
 
-0. **Go public from a fresh repo, not by flipping this one** — decided 2026-09-14 (DECISIONS), and it is
-   **first**, because items 6 and 7 both need a public repo to exist. Create a new public repo under the
-   name Phase 52 settles, seeded with **one initial commit of the Batch H end state**.
-   `ArranPell/AchievementTrackerPlus` stays private and frozen as the working archive; the new repo
-   becomes the working repo, so there are never two live ones. Three problems it closes at once: the
-   Lady Elyssa correspondence in this repo's history (Phase 49), a history that is overwhelmingly
-   Denrage's commits with `main` still tracking upstream — which contradicts the "different module, not
-   a fork" position we actually hold — and the repo name. What it costs: granular public commit history,
-   which in this project lives in `COMPLETED.md` and `DECISIONS.md` rather than in commit messages, both
-   of which stay in the archive. Losing the `upstream` remote costs nothing: the documented way to send
-   Denrage a PR already uses a separate `prfork` clone off his repo. **What ships in that initial commit
-   is settled** — the trimmed set: `src/`, `LICENSE`, `.gitignore`, `README.md`, `CHANGELOG.md` (item 7)
-   and `docs/{PLAN,ROADMAP,BACKLOG,UI-DESIGN,PATHING-PR}.md`. **Done 2026-09-15: `ArranPell/Quarry`,
-   one commit, seeded exactly this way.** Refinement to "the new repo becomes the working repo" (DECISIONS
-   2026-09-15): it can't be, because the never-ship docs must keep living somewhere versioned — so this
-   private repo stays the working repo and the public one gets a fresh snapshot commit per release. **Not** `CLAUDE.md` or `.claude/`
-   (ArranPell, 2026-09-14, reversing the Phase 51 plan to ship a scrubbed CLAUDE.md — both are untracked
-   now, so a checkout of this repo already omits them), and not `DECISIONS.md`, `COMPLETED.md`,
-   `handoff.md`, `PROJECT-HANDOFF.md`, `SESSION-*.md`, `docs/analysis/` or `docs/private/`. The manifest
-   `url` changes to the new repo in the same commit (Phase 56 item 34).
-   **The seed is mechanical, not a checklist:** `.gitattributes` marks every never-ship path
-   `export-ignore`, and `git archive` honours it. From this repo, on `fork`:
+0. **Go public from a fresh repo instead of flipping this one.** Decided 2026-09-14 (DECISIONS). It's
+   first because items 6 and 7 both need a public repo to exist. The plan: create a new public repo under
+   the name Phase 52 settles, seeded with one initial commit of the Batch H end state.
+   `ArranPell/AchievementTrackerPlus` stays private and frozen as the working archive. The new repo
+   becomes the working repo, so there are never two live ones.
+
+   This solves three problems at once. It keeps private correspondence in this repo's history out of the
+   public one (Phase 49). It drops a history that's mostly Denrage's commits, with `main` still tracking
+   upstream, which contradicts our position that this is a different module and not a fork. And it fixes
+   the repo name. The cost is granular public commit history. In this project that history lives in
+   `COMPLETED.md` and `DECISIONS.md` rather than in commit messages, and both stay in the archive. Losing
+   the `upstream` remote costs nothing: the documented way to send Denrage a PR already uses a separate
+   `prfork` clone of his repo.
+
+   What ships in that initial commit is settled. It's the trimmed set: `src/`, `LICENSE`, `.gitignore`,
+   `README.md`, `CHANGELOG.md` (item 7) and `docs/{PLAN,ROADMAP,BACKLOG,UI-DESIGN,PATHING-PR}.md`, since
+   joined by `CONTRIBUTING.md`, `SECURITY.md` and the `.github/` issue templates. The private working docs
+   stay private: `DECISIONS.md`, `COMPLETED.md`, and the working notes and analysis kept alongside them for
+   backup and history. The manifest `url` changes to the new repo in the same commit (Phase 56 item 34).
+
+   Done (2026-09-15): `ArranPell/Quarry`, one commit, seeded this way. One refinement (DECISIONS
+   2026-09-15): the new repo can't be the working repo, because the never-ship docs need to keep living
+   somewhere versioned. So this private repo stays the working repo, and the public one gets a fresh
+   snapshot commit per release.
+
+   The seed is mechanical, not a checklist. `.gitattributes` marks every never-ship path `export-ignore`,
+   and `git archive` honours it. From this repo, on `fork`:
 
    ```
    git archive --format=tar --prefix=quarry/ fork | tar -x -C <somewhere outside this repo>
    git archive fork | tar -t | grep -E 'CLAUDE|\.claude|DECISIONS|COMPLETED|handoff|PROJECT-HANDOFF|SESSION-|analysis|private|secrets'
    ```
 
-   The second line must print nothing. Then, in the extracted folder: edit the manifest `url`, add
-   `CHANGELOG.md` (item 7), `git init`, one commit, push to the new public repo. Copying the working
-   folder instead of archiving would ship everything — don't.
-1. ~~**Module rename → Batch H Phase 52.**~~ **Done 2026-09-14:** the module is **Quarry**, namespace
-   `ArranPell.Quarry`, collision-checked against `blish-hud/bhud-pkgs` (1,105 manifests, no "quarr").
-   The public repo takes the name at item 0; the manifest `url` changes then (Phase 56 item 34).
-2. ~~**README + module description → Batch H Phase 55.**~~ **Done 2026-09-14** (Phases 51 and 55): the
-   description carries the "Based on Denrage's Achievement Tracker (MIT)" line and link; `README.md` exists;
-   `LICENSE` carries both notices — never drop his.
-3. ~~**`HuntMode` default**~~ **Decided 2026-09-15: stays off** (ArranPell). A first-time installer with
-   Pathing shouldn't have category state change under them (DECISIONS 2026-09-09); the README and the
-   setting's own description say how to turn it on.
-4. ~~**Divergence housekeeping → Batch H Phases 49, 50 and 53.**~~ **Done 2026-09-14.** `Gw2WikiDownloader`
-   stays in-tree (it is the only route to regenerating the hosted files, and `Quarry.WikiData` is kept as
-   a separate project because it references it — Phase 48 did *not* extend it; `DerivedSubpageGenerator`
-   is standalone). `Persistance` → `Persistence` done in Phase 53.
-5. ~~**Contingency hooks + log-level audit → Batch H Phase 54.**~~ **Done 2026-09-14** as Phase 56 items
-   12–15 and 27: `Blish_HUD.Debug.Contingency` at the three denied-write / no-network sites, and the log
-   down to 12 Info lines per start (GitHub issue #13).
-6. ~~**SSRD static hosting** of the data files.~~ **Done 2026-09-20, shipped in 2.0.2.** The contributor
-   account arrived 2026-09-19; `ArranPell/Quarry` is registered in SSRD with a push webhook; the three
-   files live on an orphan `bhud-static/ArranPell.Quarry` branch and are served at
+   **The second line must print nothing.** If it prints anything, a never-ship file would go public. Then,
+   in the extracted folder: edit the manifest `url`, add `CHANGELOG.md` (item 7), `git init`, make one
+   commit and push to the new public repo. Don't copy the working folder instead of archiving: that ships
+   everything.
+1. Module rename (Batch H Phase 52). Done (2026-09-14): the module is Quarry, namespace
+   `ArranPell.Quarry`, collision-checked against `blish-hud/bhud-pkgs` (1,105 manifests, no "quarr"). The
+   public repo took the name at item 0, and the manifest `url` changed then (Phase 56 item 34).
+2. README and module description (Batch H Phase 55). Done (2026-09-14, Phases 51 and 55): the description
+   carries the "Based on Denrage's Achievement Tracker (MIT)" line and link, `README.md` exists, and
+   `LICENSE` carries both notices. Never drop his.
+3. `HuntMode` default. Done (2026-09-15): it stays off. Someone installing for the first time shouldn't
+   find their Pathing categories changing under them (DECISIONS 2026-09-09). The README and the setting's
+   description both say how to turn it on.
+4. Divergence housekeeping (Batch H Phases 49, 50 and 53). Done (2026-09-14). `Gw2WikiDownloader` stays
+   in-tree, because it's the only route to regenerating the hosted files. `Quarry.WikiData` stays a
+   separate project because `Gw2WikiDownloader` references it. Phase 48 did *not* extend
+   `Gw2WikiDownloader`; `DerivedSubpageGenerator` is standalone. `Persistance` → `Persistence` was done
+   in Phase 53.
+5. Contingency hooks and log-level audit (Batch H Phase 54). Done (2026-09-14) as Phase 56 items 12–15
+   and 27: `Blish_HUD.Debug.Contingency` at the three denied-write / no-network sites, and the log cut to
+   12 Info lines per start (GitHub issue #13).
+6. SSRD static hosting of the data files. Done (2026-09-20), shipped in 2.0.2. The contributor account
+   arrived 2026-09-19. `ArranPell/Quarry` is registered in SSRD with a push webhook. The three files live
+   on an orphan `bhud-static/ArranPell.Quarry` branch and are served at
    `https://bhm.blishhud.com/ArranPell.Quarry/data/`. `AchievementService`'s three URLs were repointed in
-   2.0.2 (commit `cf3bfae`) and cold-install tested. The **served** copies were re-downloaded and hashed:
-   byte-for-byte identical to Denrage's originals, md5s matching what `version.json` publishes.
-   **What this bought, and what it did not.** We control *serving*, not *generating*. The files are mirrors
-   frozen at `last-modified 2026-04-22`, still v9, and `Gw2WikiDownloader` cannot rebuild them (see the
-   Data independence section). If Denrage ever regenerates and bumps to v10, his users get fresh data and
-   ours do not. Existing installs paid nothing on upgrade: `version.json` still reports Version 9 and the
-   cached md5s still match, so the download path never runs — which also means a warm test proves nothing
-   and only a cold one is evidence.
-   **The "embed the rest too" alternative is costed, and NOT ruled out.** Raw, the three files are 28.1 MB
-   (`version.json` 201 B, `achievement_data.json` 8.4 MB, `achievement_tables.json` 19.7 MB) — but the
-   `.bhm` is a zip, so raw bytes are the wrong comparison. Measured 2026-09-20: they deflate **13.8:1 to
-   2.0 MB** (8.4 → 0.85 MB, 19.7 → 1.18 MB), taking the `.bhm` from 2.2 MB to roughly **4.2 MB**. That is
-   close to the "~2.2 → ~6 MB" estimate in DECISIONS 2026-09-15, which was right. Embedding would also
-   remove ~28 MB of first-run download per user, the md5 verification machinery, and the hosting
-   dependency outright. The only thing hosting buys over embedding is refreshing data without a module
-   release — worth nothing while the data cannot be regenerated at all. **Live option for a 2.x; it
-   deserves its own decision rather than this footnote.**
-   **Hazard found and guarded — do not undo this.** SSRD builds on Windows (its Sentry stack paths are
-   `C:\BhApps\BhudRequestFor\work\...`) and the data files are LF-only, with 585,648 newlines in
-   `achievement_tables.json`. Any EOL conversion on SSRD's clone would change every byte count, fail the
-   md5 check, exhaust `DownloadFile`'s three retries and leave fresh installs with no data — silently, with
-   the branch looking perfect. The static branch's **first** commit is a `.gitattributes` containing
-   `* -text`. Never remove it, and never add a data file to that branch ahead of it.
-   **Still on Denrage's URLs:** `DerivedSubpageGenerator`'s `subPages.json` source (70 MB, build-time only,
-   deliberately not mirrored — disproportionate to re-clone on every webhook push for a tool run twice a
-   year). Archiving a local copy is the cheap insurance if that dependency ever matters.
-7. ~~**Release build + `CHANGELOG.md`** keyed by manifest version.~~ **Done 2026-09-15: 2.0.0.**
-   `CHANGELOG.md` at the repo root, keyed by the manifest version; `dotnet build -c Release` writes
+   2.0.2 (commit `cf3bfae`) and cold-install tested. The served copies were re-downloaded and hashed.
+   They're byte-for-byte identical to Denrage's originals, with md5s matching what `version.json`
+   publishes.
+
+   Hosting our own copies means fresh installs keep working if Denrage's namespace ever goes away. It
+   doesn't make the data any newer. The files are still the April build (v9, `last-modified 2026-04-22`),
+   and `Gw2WikiDownloader` can't rebuild them yet (see Data independence). If Denrage publishes v10, his
+   users get it and ours don't. Existing installs paid nothing on upgrade: `version.json` still reports
+   Version 9 and the cached md5s still match, so the download path never runs. That also means a warm test
+   proves nothing. Only a cold install is evidence.
+
+   Embedding the other files too is costed, and not ruled out. Raw, the three files are 28.1 MB
+   (`version.json` 201 B, `achievement_data.json` 8.4 MB, `achievement_tables.json` 19.7 MB). The `.bhm`
+   is a zip, though, so raw bytes are the wrong comparison. Measured 2026-09-20, they deflate 13.8:1 to
+   2.0 MB (8.4 → 0.85 MB, 19.7 → 1.18 MB), which would take the `.bhm` from 2.2 MB to roughly 4.2 MB.
+   That's close to the "~2.2 → ~6 MB" estimate in DECISIONS 2026-09-15. Embedding would also remove
+   ~28 MB of first-run download per user, the md5 verification machinery, and the hosting dependency. The
+   one thing hosting offers over embedding is refreshing data without a module release, and that's worth
+   nothing while the data can't be regenerated. It's a live option for a 2.x, and it deserves its own
+   decision.
+
+   **Warning: the static branch must keep `* -text` as its first commit.** SSRD builds on Windows (its
+   Sentry stack paths are `C:\BhApps\BhudRequestFor\work\...`), and the data files are LF-only, with
+   585,648 newlines in `achievement_tables.json`. Any line-ending conversion on SSRD's clone would change
+   every byte count and fail the md5 check. `DownloadFile` would use up its three retries and leave fresh
+   installs with no data. It would fail silently, with the branch looking perfect. So the static branch's
+   first commit is a `.gitattributes` containing `* -text`. Never remove it, and never add a data file to
+   that branch ahead of it.
+
+   Still on Denrage's URLs: `DerivedSubpageGenerator`'s `subPages.json` source (70 MB, build-time only).
+   It isn't mirrored, because re-cloning 70 MB on every webhook push is out of proportion for a tool run
+   twice a year. Archiving a local copy is cheap insurance if that dependency ever matters.
+7. Release build and `CHANGELOG.md`, keyed by manifest version. Done (2026-09-15): 2.0.0. `CHANGELOG.md`
+   is at the repo root, keyed by the manifest version. `dotnet build -c Release` writes
    `src\Quarry\bin\Release\net4.7.2\Quarry.bhm` (2.2 MB, pdb included so Blish crash reports keep line
-   numbers), dev-loaded before release; GitHub release `v2.0.0` on the public repo carries it.
-8. ~~**Public-readiness code review → Batch H Phase 54**, with its findings as Phase 56.~~ **Done
-   2026-09-14:** six-lens review, 69 confirmed findings, 41 fix items, all landed but the manifest `url`
-   (item 0's). What remains at the gate is 0, 3, 6 and 7.
+   numbers). It was dev-loaded before release, and GitHub release `v2.0.0` on the public repo carries it.
+8. Public-readiness code review (Batch H Phase 54), with its findings as Phase 56. Done (2026-09-14): a
+   six-lens review, 69 confirmed findings and 41 fix items, all landed except the manifest `url` (item
+   0's).
+
+Every gate item is now done: 0, 3 and 7 on 2026-09-15, and 6 on 2026-09-20.
 
 ## Code review — two scoped reviews at the gates
 
-Decided 2026-09-09 (DECISIONS): no single full review. The 06 Sept review was lens-scoped and its
-findings cost a whole arc (Phases 11–14); a repo-wide pass at the wrong moment buys nits in code about
-to change.
+Decided 2026-09-09 (DECISIONS): no single full review. The 06 Sept review was lens-scoped, and its
+findings cost a whole arc (Phases 11–14). A repo-wide pass at the wrong moment buys nits in code that's
+about to change.
 
-- **Hunter-code review — ✅ ran 2026-09-09.** Its four findings became **Phase 24** (trails indexed at
-  (0,0,0) being the significant one; cache schema is now **5**). Scope was Phases 15–17 only, plus the two
-  post-batch fixes. Lenses were: lifecycle / threading / exceptions (as 06 Sept) **plus data** — pack parse
-  correctness, cache invalidation and the schema-bump path, the tagged-vs-untagged preference rule, the
-  reflection bridge's failure modes when Pathing is absent or changes, and the 2 s accumulator's
-  behaviour across window show/hide and map change. Findings become a short fix phase; RC3 waits for it.
-- **Public-readiness review — now Batch H Phase 54** (was "at the publish gate"; moved 2026-09-14 so it
-  runs over the tree as it will actually ship, after the cleanup rather than before it). Scope: whole
-  repo. Brief: dead code and upstream remnants, log levels, anything embarrassing in a public tree, and
-  **the Phases 18–23 code that landed after the 06 Sept review** and has never had the threading lens
-  run over it — backlog item 18 (the eight off-main-thread control sites) gets decided here. Findings
-  become Phase 56, the last pre-public phase. PLAN.md carries the full brief, including what a
-  2026-09-14 pass already checked and found clean so the review doesn't re-derive it.
+- **Hunter-code review ✅ ran 2026-09-09.** Its four findings became Phase 24. The significant one was
+  trails indexed at (0,0,0); the cache schema is now 5. The scope was Phases 15–17 only, plus the two
+  post-batch fixes. The lenses were the 06 Sept ones (lifecycle, threading, exceptions) plus data: pack
+  parse correctness, cache invalidation and the schema-bump path, the tagged-vs-untagged preference rule,
+  the reflection bridge's failure modes when Pathing is absent or changes, and the 2 s accumulator's
+  behaviour across window show/hide and map change.
+- **Public-readiness review ✅ ran 2026-09-14 as Batch H Phase 54.** It moved from "at the publish gate"
+  so it would run over the tree as it would ship. The scope was the whole repo: dead code and upstream
+  remnants, log levels, anything embarrassing in a public tree, and the Phases 18–23 code that landed
+  after the 06 Sept review. Six lenses, 69 confirmed findings and 41 fix items, all landed as Phase 56
+  (publish-gate item 8). The brief and results are in COMPLETED.md under Batch H.
 
-Carried from the 06 Sept review, not re-reviewed: item 18 (optional main-thread marshalling) and item 33
-(sync `ReadAllText` on load — do nothing unless it hangs).
+Carried from the 06 Sept review and not re-reviewed: item 18 (optional main-thread marshalling) and
+item 33 (sync `ReadAllText` on load; do nothing unless it hangs).
 
 ## Not on the roadmap
 
-Everything in BACKLOG.md's **Closed** and **Explicitly out of scope**: meta-event timers, Wizard's Vault,
-WvW/PvP, drawing our own markers, raising the tracked cap, regenerating wiki data as a product feature.
-Also not planned: taking over or merging back into Denrage's module (DECISIONS 2026-09-08). Further
-upstream PRs stay optional under the `upstream-candidate` rule in CLAUDE.md — the promised one is done.
+Everything in BACKLOG.md's Closed and Explicitly out of scope sections: meta-event timers, Wizard's Vault,
+WvW/PvP, drawing our own markers, raising the tracked cap, and regenerating wiki data as a product feature.
+Also not planned: taking over or merging back into Denrage's module (DECISIONS 2026-09-08). Further upstream
+PRs stay optional under the `upstream-candidate` rule (BACKLOG, Housekeeping). The promised one is done.
 
 ## Releasing — the snapshot-per-release loop (from 2.0.0, 2026-09-15)
 
-This private repo is the working repo. The public repo, `ArranPell/Quarry`, holds one commit per release,
-each a `git archive` snapshot of this tree (so `.gitattributes`' `export-ignore` set never ships). Steps,
-from this repo on `fork` with a clean tree:
+This private repo is the working repo. The public repo, `ArranPell/Quarry`, holds one commit per release.
+Each is a `git archive` snapshot of this tree, so the `.gitattributes` `export-ignore` set never ships.
+The steps, from this repo on `fork` with a clean tree:
 
-1. Bump `version` in `src/Quarry/manifest.json`; add the release's section to `CHANGELOG.md`; commit.
+1. Bump `version` in `src/Quarry/manifest.json`. Check that `contributors` is still there, because
+   Blish's repo downloader requires it (DECISIONS 2026-09-21). Add the release's section to
+   `CHANGELOG.md` and commit.
 2. `dotnet build src/Quarry/Quarry.csproj -c Release`; dev-load `bin\Release\net4.7.2\Quarry.bhm` once.
 3. Snapshot into a clone of the public repo and push:
 
@@ -430,11 +397,13 @@ from this repo on `fork` with a clean tree:
    git add -A && git commit -m "Quarry <version>" && git push
    ```
 
-   (`git rm -rq .` first so files deleted since the last release disappear from the snapshot too.)
+   `git rm -rq .` comes first so that files deleted since the last release disappear from the snapshot
+   too.
 4. `gh release create v<version> src\Quarry\bin\Release\net4.7.2\Quarry.bhm --repo ArranPell/Quarry --title "Quarry <version>" --notes-file <the CHANGELOG section>`.
-5. The SSRD account exists (2026-09-19) and `ArranPell/Quarry` is registered with a push webhook, so
-   submit the release there for the in-game module repository to pick it up. **Not done as of 2026-09-20**
-   — the in-game listing is the remaining half of the SSRD work; hosting (gate item 6) is finished.
+5. The in-game module repository. Quarry has been listed there since 2.0.3 (2026-09-21). The listing went
+   in 2026-09-20, but 2.0.2's manifest lacked `contributors` and the downloader failed on it. The listing
+   takes its description from the public repo's metadata, so keep Discussions on. How a new release
+   reaches the listing isn't written down yet: either automatically through the SSRD push webhook, or by
+   a manual SSRD submission. Record it here at the next release.
 
-Never push this repo's branches to the public repo — that is the history item 0 exists to keep private.
-
+Never push this repo's branches to the public repo. Keeping that history private is why item 0 exists.

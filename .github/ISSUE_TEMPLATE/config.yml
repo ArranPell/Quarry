@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Ideas and questions
+    url: https://github.com/ArranPell/Quarry/discussions/categories/suggestions
+    about: Feature ideas, questions, and anything that isn't a bug or a data error.

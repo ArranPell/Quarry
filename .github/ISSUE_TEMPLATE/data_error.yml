@@ -6,9 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Quarry's achievement data comes from the Guild Wars 2 Wiki, not from Quarry itself. Some errors — a
-        wrong objective order, a stale location — are upstream wiki errors and get fixed there, not here.
-        This template is still the right place to report them; it helps tell wiki bugs from Quarry bugs.
+        Quarry's achievement data comes from the Guild Wars 2 Wiki. Some errors, such as a wrong objective
+        order or a stale location, are wiki errors and get fixed on the wiki. Report them here anyway: this
+        template helps tell wiki errors from Quarry bugs.
   - type: input
     id: achievement
     attributes:
@@ -33,7 +33,7 @@ body:
   - type: textarea
     id: actual
     attributes:
-      label: What the game or wiki actually shows
+      label: What the game or wiki shows
       description: Include a link to the wiki page if you have one.
     validations:
       required: true

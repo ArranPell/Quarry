@@ -1,97 +1,40 @@
 # Plan
 
 > **Reading this in the public repo?** `docs/DECISIONS.md` (the decision log) and `docs/COMPLETED.md`
-> (the completed-phase archive), cited throughout, live in the author's private working repo along with
-> the other archive-only docs. The citations are left as-is: they point at a record that exists, just not
-> here.
+> (the completed-phase archive) are cited throughout. They live in my private working repo, along with
+> the other archive-only docs. The citations stay as they are: they point at a record that exists, just
+> not here.
 
-Phased. Each phase ends with a build ArranPell load-tests in Blish before the next starts. Update the
-**Status** line of each phase as work lands; keep this file honest rather than aspirational.
+The work is phased, and phases are grouped into batches. Each batch ends with a build I load-test in
+Blish before the next one starts. Each phase's Status line is updated as work lands, and it records what
+is true, not what's hoped for.
 
-Phases 0–17, 18–23, 24–30 and the upstream PR are done and confirmed — moved to `docs/COMPLETED.md` so
-this file only carries what's active or not started. Search there for a phase number if you need the
-history.
+Nothing is active. The 2026-09-22 editing pass over the public docs is done. It's docs only, with no
+change in behaviour, and it ships with the next release. Every phase through Batch H (Phases 0–56) is
+done, confirmed in-game and moved to `docs/COMPLETED.md`, where you can search by phase number or batch
+name. Milestones, the publish gate and the release loop are in `docs/ROADMAP.md`. This file was cut back
+to status only on 2026-09-21. The batch summaries it used to repeat are in ROADMAP and COMPLETED.
 
-**RC1 (Phases 15–17) is done** — built, load-tested and confirmed 2026-09-09. **RC2 is done** — Batch C
-(Phases 24–28, 30) confirmed 2026-09-10 and Phase 29 confirmed 2026-09-11. The promised upstream PR is
-also done (Denrage PR #8). All of it is in `docs/COMPLETED.md`.
+## Released
 
-**RC3 — "the hunt loop made good" — is the current milestone**, designed 2026-09-11 (decisions in
-`docs/DECISIONS.md` under that date).
+- **2.0.0 (2026-09-15).** The publish gate: `ArranPell/Quarry` went public, with one snapshot commit per
+  release and Hunt mode off by default.
+- **2.0.1 (2026-09-15).** Fixed the cold-install crash in the Target List, a Blish engine stack overflow on
+  a wrapped, centred label (BACKLOG, Known quirks / bugs).
+- **2.0.2 (2026-09-20).** The three wiki data files are served from our own SSRD namespace
+  (`ArranPell.Quarry`, ROADMAP gate item 6), and Quarry has its own corner icons and emblem. We serve the
+  files but can't regenerate them, so the mirrors stay frozen at 22 April 2026.
+- **2.0.3 (2026-09-21).** Restored the manifest's required `contributors` field. Without it, Blish's repo
+  downloader failed. Quarry now installs from the in-game module repository (DECISIONS 2026-09-21).
 
-- **Batch D = Phases 31–34 is done** — confirmed in-game 2026-09-11, moved to `docs/COMPLETED.md`. It
-  made the bounded Here list the thing you act on rather than look at.
-- **Batch F = Phases 38–45 is done** — confirmed in-game 2026-09-13, moved to `docs/COMPLETED.md`. Our
-  own card grid, card, window body, the Inspector, the Target List, resize, and retiring the old card
-  path. Brief: `docs/UI-DESIGN.md`; reasoning DECISIONS 2026-09-12/13; the four load-test rounds are in
-  COMPLETED.md's Batch F entry.
-- **Batch G = Phases 46–48 is done** — confirmed in-game 2026-09-14, moved to `docs/COMPLETED.md`. The
-  data batch: stopped paying for `achievement_tables.json` at startup, put the wiki Notes column in the
-  Inspector, and replaced `subPages.json`'s 70 MB runtime download with a small embedded derived file.
-  Origin: the two analysis documents in `docs/analysis/`; reasoning in DECISIONS 2026-09-13; the
-  load-test fix round is in COMPLETED.md's Batch G entry.
-- **Batch E = Phase 35 is done** — confirmed in-game 2026-09-14, moved to `docs/COMPLETED.md`; was
-  Phases 35–36. The Here strip lands in the Target List and the window's height follows what's actually
-  visible. **RC3 closed here**, on its own exit criterion. **Phase 36 (compact row toggles) is retired**:
-  Batch F's Phase 43 deleted or absorbed five of its six toggles, and made the window user-resizable,
-  which was the real fix the "one height function" was reaching for. Phase 37 (contrast/tokens) was
-  absorbed into Batch F as Phase 39. Reasoning for both: DECISIONS 2026-09-14.
-- **Batch H = Phases 49–56 is done** — confirmed in-game by ArranPell 2026-09-14 (full load-test pass,
-  including both destructive checks; no regressions), moved to `docs/COMPLETED.md`. The cleanup and
-  public-readiness batch: repo purge, unused assets and csproj cruft, retiring the Denrage names from
-  our own code, the module rename, the dead-code sweep, the public-readiness review, and the README. It
-  absorbed publish-gate items 1, 2, 4, 5 and 8 from `docs/ROADMAP.md`. **This was the last batch before
-  the publish gate.**
-- **The publish gate was taken 2026-09-15**: `ArranPell/Quarry` is public (one snapshot commit), release
-  `v2.0.0` carries `Quarry.bhm`, Hunt mode stays off by default. ROADMAP owns the gate and the new
-  "Releasing" loop; nothing is active here until the first public feedback or a BACKLOG item is scheduled.
-- **2.0.1 (2026-09-15)** fixed the cold-install crash in the Target List — every fresh install of 2.0.0
-  hit it, which is why "no bug reports" was never evidence of none.
-- **2.0.2 (2026-09-20) — gate item 6 closed.** The SSRD contributor account arrived 2026-09-19; the three
-  wiki data files are now mirrored on `bhud-static/ArranPell.Quarry` and served from our own namespace,
-  and `AchievementService` points there (commit `cf3bfae`, cold-install tested). We control serving, not
-  generating — the mirrors are frozen at 22 April 2026. Reasoning and the LF/`.gitattributes` hazard:
-  DECISIONS 2026-09-20 and ROADMAP gate item 6. **Remaining SSRD work: the in-game listing.**
+## What's next
 
----
-
-## Batch F — the UI redesign — done, confirmed in-game 2026-09-13
-
-Moved to `docs/COMPLETED.md` in full (all eight phases, plus the four rounds of load-test fixes).
-Search there for "Batch F" or a phase number 38–45 if you need the detail. Summary: our own card grid
-and card, our own window body, the Inspector, the Target List, resize on both windows, and retiring the
-old card path — confirmed by ArranPell after fixing the Target List's dead band and drop/open double-fire,
-the Inspector's title/chip-colour/deselect/text-order/peek-gating issues, and adding drag-resize plus
-navigation shortcuts (Target List ↔ Quarry) neither had before.
-
----
-
-## Batch G — the data batch — done, confirmed in-game 2026-09-14
-
-Moved to `docs/COMPLETED.md` in full (all three phases, plus the load-test fix round). Search there for
-"Batch G" or a phase number 46–48 if you need the detail. Summary: stopped paying for
-`achievement_tables.json` at startup, put the wiki Notes column in the Inspector, and replaced
-`subPages.json`'s 70 MB runtime download with a small file embedded in the `.bhm` — confirmed by ArranPell
-after fixing undecoded HTML entities, a leaking chat-link script, a missing Map-column fallback image
-(a real regression against the old Item Details window), and turning wiki chat-link placeholders into
-click-to-copy in-game codes and Inspector images into click-to-expand ones instead of both alt-tabbing
-to a browser.
-
----
-
-## Batch E — the Here strip — done, confirmed in-game 2026-09-14
-
-Moved to `docs/COMPLETED.md` in full (Phase 35, the retired Phases 36 and 37, plus the load-test fix
-round). Search there for "Batch E" or "Phase 35" if you need the detail. Summary: the Here strip in the
-Target List (the top three candidates for the current map, click-to-Inspector, "+" to target, right-click
-to hide), one height function derived from what's actually visible instead of a fixed three-way split
-that reserved 18 px for an invisible summary line, and a 28 px top bar with 20 px icons and a tinted
-Quarry shortcut — confirmed by ArranPell after enlarging the "+" glyph and fixing the strip sticking on a stale
-"permissions not granted" state when its first fetch beat the subtoken update; the "flat window body reads
-as blank" observation from the same test went to BACKLOG by ArranPell's call. **RC3 closed on it.**
+The 2.0.x maintenance items staged at the top of `docs/BACKLOG.md` (log levels for Sentry, version lines
+in the log). The first real bug report will trigger them. Open bugs: `ArranPell/Quarry#3` and `#4`.
+Anything else becomes a phase here when it's picked up from BACKLOG or ROADMAP's RC4.
 
 ## Backlog
 
-Moved to `docs/BACKLOG.md` (2026-09-06) so ideas can pile up without cluttering this file. Rule: an idea
-lives there until it's scheduled, at which point it becomes a phase here and is deleted from the backlog.
-Rejected ideas go to that file's **Closed** section with a reason. Out-of-scope list lives there too.
+The backlog moved to `docs/BACKLOG.md` (2026-09-06) so ideas can pile up without cluttering this file.
+An idea lives there until it's scheduled. Then it becomes a phase here and is deleted from the backlog.
+Rejected ideas go to that file's Closed section with a reason. The out-of-scope list is there too.
