@@ -1,6 +1,6 @@
 {
   "name": "Quarry",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "namespace": "ArranPell.Quarry",
   "package": "Quarry.dll",
   "manifest_version": 1,

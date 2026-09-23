@@ -37,6 +37,10 @@ turned up while doing it. Neither is scheduled yet:
   `version.json`'s md5, `DownloadFile` warns and the load carries on with the cache. Only a first run
   with no cache reaches Error. If we ever publish mismatched files, existing users would never report it.
   Consider Error once per session on the md5-mismatch path whatever the cache state.
+- **Map id 0 logs a Warn with a full stack trace** (added 2026-09-23, seen in the 2.0.4 Windows
+  load). Mumble reports map 0 at character select or before the game is in a map, and
+  `CurrentMapService.UpdateMap` asks `/v2/maps/0`, which 404s. Skip the lookup for `mapId <= 0`.
+  Harmless (Warn doesn't reach Sentry), just noise.
 
 ### Verified clean; don't re-check
 

@@ -2,6 +2,10 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.5 — version bump only (2026-09-23)
+
+- No changes from 2.0.4. The version number moved on so 2.0.4 isn't published twice.
+
 ## 2.0.4 — progress fix for accounts with duplicate API entries, and better logs (2026-09-23)
 
 - **Fixed:** on some accounts Quarry showed no progress for any achievement, including completed ones
