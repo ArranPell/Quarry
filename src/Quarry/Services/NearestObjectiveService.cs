@@ -278,8 +278,8 @@ namespace Quarry.Services
         //
         // Each level speaks only when the ones above it have nothing left to say. An untagged marker has
         // no bit to check against, so it can never disappear once done and will happily claim to be the
-        // "nearest" thing left in an area you have already cleared -- found in the load-test, where Lady
-        // Elyssa's trail sent the player back over finished ground while Tekkit's tagged icons correctly showed
+        // "nearest" thing left in an area you have already cleared -- found in the load-test, where an
+        // untagged pack's trail sent the player back over finished ground while tagged objectives showed
         // what remained elsewhere on the map.
         private List<AchievementObjective> RemainingOnMap(AchievementRoute route, int achievementId, int mapId)
         {

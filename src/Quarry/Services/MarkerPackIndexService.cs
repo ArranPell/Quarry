@@ -368,7 +368,7 @@ namespace Quarry.Services
         // trails and every trail objective was indexed at (0,0,0), so its "distance" was really the
         // player's distance from the map origin -- a number that moves as you walk but has nothing to do
         // with the trail. That is the root cause behind the Auric Basin case the tagged-over-untagged
-        // rule was written for: Lady Elyssa's untagged trail kept winning "nearest" with a made-up
+        // rule was written for: an untagged pack's trail kept winning "nearest" with a made-up
         // distance. Sampling the points (rather than keeping one per objective) is what lets the
         // existing "nearest objective" code answer "how far to this trail" with no changes of its own.
         private static int AddTrailObjectives(Trail trail, AchievementRoute route, string categoryNamespace, int bit, string waypoint, ref int trailMapZeroCount)
