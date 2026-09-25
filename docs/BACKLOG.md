@@ -115,6 +115,12 @@ Batch F, Batch E) are in COMPLETED.md.*
 *Features leave this section when they become phases. RC2's multi-map work and Batch D (Phases 31–34) are
 in COMPLETED.md.*
 
+- **API-only achievements: show what the wiki data doesn't have (2026-09-24; measured).** 268 live
+  achievements are in `/v2/achievements` but not in our April data, including all of Eternity's Garden and
+  Leyspring Hollows. The All tab, Here and `PersistenceService` all key off the wiki data, so they're
+  invisible and can't be tracked. Build the missing entries from the API (name, description, bits, tiers,
+  category) with guidance tier *None*. ROADMAP 2.1 data item 1; `docs/analysis/data_staleness.py` re-measures.
+
 - **Wiki row names → floor POIs, not just sectors (deferred out of Phase 29, 2026-09-11; measure
   first).** Phase 29 resolves an area-named row against the current map's sectors. The same
   `/v2/continents/:c/floors/:f/regions/:r/maps/:m` fetch also returns `PointsOfInterest`: landmarks and
@@ -151,6 +157,13 @@ in COMPLETED.md.*
     the whole item catalogue. Don't claim buyability for those; leave them unmarked.
   - Wallet-aware "can you afford it" needs the `wallet` scope. Skip it unless it's ever worth asking for.
 
+- **Here shows a pack-indexed achievement on a map where nothing is left to do (2026-09-24; confirmed in
+  code).** `HereService` adds every id `MarkerPackIndexService.AchievementsOnMap` returns, and that set
+  doesn't look at completion. A multi-map achievement whose steps here are all done still shows, with
+  no badge (or `~ Route` if an untagged trail is on the map). Small runtime fix: an index-only candidate
+  (not reached via the category link) needs a remaining tagged bit or a route on this map. The full fix
+  is ROADMAP 2.1 item 4 (per-row maps).
+
 - **Core Tyria: three sources plus a manual one, and an honest gap for the rest (2026-09-09).** What makes
   it tractable is that Here only needs achievement → map. Coordinates are only needed for the Next line.
   The sources, in order:
@@ -158,13 +171,13 @@ in COMPLETED.md.*
   2. A wiki subpage coordinate implies its map for free, by reverse-looking-up the continent coordinate
      against `continent_rect`. So the 3,487 coordinate-bearing pages give map membership as a by-product.
   3. `Zone`/`Area` keys give map membership with no coordinate.
-  4. Coverage will still be partial, so the pin-your-own-location item (ROADMAP, RC4) is the fix for the
+  4. Coverage will still be partial, so the pin-your-own-location item (ROADMAP, 2.2, was RC4) is the fix for the
      tail. The guidance badge makes the gap visible instead of hiding it.
 
   Not the plan: a hand-maintained core-Tyria map table.
 
 *The ★ personal-marker-pack idea, "pin a location while you play", "route mode" and the
-`FileSystemWatcher` auto-reload idea have been tracked privately since 2026-09-14. ROADMAP's RC4 section
+`FileSystemWatcher` auto-reload idea have been tracked privately since 2026-09-14. ROADMAP's 2.2 section (was RC4)
 summarises the first three. The older "Core Tyria, second attempt" and "personal marker pack" entries that
 sat here duplicated the Core Tyria entry above and the marker-pack idea, and were removed 2026-09-21.*
 
@@ -223,6 +236,12 @@ build and CHANGELOG shipped with 2.0.0. The four NuGet warnings are tracked priv
 `#4` (partially-tagged-pack suppression). How they got there (filed privately 2026-09-14, refiled publicly
 2026-09-20) is in COMPLETED.md. Below are quirks and known issues that aren't filed.*
 
+- **A pack's category-level `achievementId` can put an achievement on maps it doesn't cover (2026-09-24).**
+  Lady Elyssa's AP pack tags its parent `goggles` category with Dive Master (335), so every diving goggle
+  inherits it and Dive Master shows in Here on Dragon's End, Verdant Brink and the rest. Being reported to the
+  pack. A Quarry guard ("ignore inherited ids") would also drop her real core markers; the clean check
+  is 2.1's per-row maps: distrust an untagged pack objective on a map where none of the achievement's
+  rows are. Players can hide the card meanwhile.
 - **Noted by the Phase 54 review but outside its lens; all core-path and rare (2026-09-14).**
   - `PersistenceService.Reload`, when triggered from `Save()` on the autosave/debounce thread, calls
     `AchievementTrackerService.TrackAchievement`, and so mutates the unsynchronised tracked list
@@ -289,7 +308,8 @@ build and CHANGELOG shipped with 2.0.0. The four NuGet warnings are tracked priv
   publish-gate item 6.
   - What remains is staleness, and it's the only part of this risk left. The mirrors are byte-for-byte
     copies of files dated `last-modified: Wed, 22 Apr 2026`, with `version.json` still at v9. That's five
-    months of drift so far. We serve the files but can't regenerate them: `Gw2WikiDownloader` as
+    months of drift so far, and measured 2026-09-24: 268 live achievements are missing (ROADMAP 2.1). We
+    serve the files but can't regenerate them: `Gw2WikiDownloader` as
     committed can't rebuild them (the cadence entry under Performance / robustness says what it can't
     do). Nothing is broken today, and it will stay the same until someone writes the generation half.
   - The vendored-snapshot fallback is still worth having and isn't affected by this change. It covers

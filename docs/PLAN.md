@@ -9,7 +9,7 @@ The work is phased, and phases are grouped into batches. Each batch ends with a 
 Blish before the next one starts. Each phase's Status line is updated as work lands, and it records what
 is true, not what's hoped for.
 
-Nothing is active. Every phase through Batch I (Phases 0–58) is done, confirmed in-game and moved to
+No batch is active. Every phase through Batch J (Phases 0–61) is done, confirmed in-game and moved to
 `docs/COMPLETED.md`, where you can search by phase number or batch name. Milestones, the publish gate and the release loop are in `docs/ROADMAP.md`. This file was cut back
 to status only on 2026-09-21. The batch summaries it used to repeat are in ROADMAP and COMPLETED.
 
@@ -24,14 +24,19 @@ to status only on 2026-09-21. The batch summaries it used to repeat are in ROADM
   files but can't regenerate them, so the mirrors stay frozen at 22 April 2026.
 - **2.0.3 (2026-09-21).** Restored the manifest's required `contributors` field. Without it, Blish's repo
   downloader failed. Quarry now installs from the in-game module repository (DECISIONS 2026-09-21).
-- **2.0.4 (2026-09-23).** Batch I: fixed `ArranPell/Quarry#5` (duplicate ids in `account/achievements`
-  left every achievement without progress) and the Sentry logging pass. Also carries the 2026-09-22
-  public-docs editing pass.
+- **2.0.4 (2026-09-23), pre-release.** Batch I: fixed `ArranPell/Quarry#5` (duplicate ids in
+  `account/achievements` left every achievement without progress) and the Sentry logging pass. Also
+  carries the 2026-09-22 public-docs editing pass. Public snapshot `cbc3bb8`, submitted to SSRD as a
+  pre-release so the #5 reporter can confirm it.
+- **2.0.5 (2026-09-23).** 2.0.4 for everyone: version bump only, submitted to SSRD's normal branch,
+  because a pre-release version number isn't reused. Public snapshot `7dc575b`.
 
 ## What's next
 
-After 2.0.4: open bugs `ArranPell/Quarry#3` and `#4`. Anything else becomes a phase here when it's
-picked up from BACKLOG or ROADMAP's RC4.
+Batch J (Phases 59–61) passed its load-test on 2026-09-24 and is ready to release as 2.0.6 (ROADMAP,
+Releasing); it closes `ArranPell/Quarry#6`. Then: open bugs `ArranPell/Quarry#3` and `#4`. Anything else becomes a phase here when it's
+picked up from BACKLOG or ROADMAP. The next milestone is 2.1, fresh data and polish (ROADMAP,
+settled 2026-09-24); RC4 is now 2.2.
 
 ## Backlog
 

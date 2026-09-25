@@ -140,6 +140,7 @@ namespace Quarry.UserInterface.Windows
             });
             this.sessionSummaryService.Changed += this.sessionSummaryChangedHandler;
             this.achievementService.PlayerAchievementsLoaded += this.AchievementService_PlayerAchievementsLoaded;
+            this.achievementService.ApiAchievementsLoaded += this.AchievementService_ApiAchievementsLoaded;
             this.currentMapService.Changed += this.CurrentMapService_Changed;
             this.markerPackIndexService.Changed += this.MarkerPackIndexService_Changed;
             this.hereExclusionService.Changed += this.HereExclusionService_Changed;
@@ -365,6 +366,22 @@ namespace Quarry.UserInterface.Windows
             // The strip itself is refreshed through HereService.CandidatesInvalidated (Phase 56), which
             // this same event feeds -- the load-test 2026-09-14 case of the very first fetch landing before
             // the subtoken resolved (NoPermission, forever) is covered there.
+        }
+
+        // Phase 60: a tracked achievement the wiki data doesn't have gets its entry from the API only once
+        // the categories are in, which is usually after this window restored its rows and skipped it.
+        private void AchievementService_ApiAchievementsLoaded()
+        {
+            GameService.Overlay.QueueMainThreadUpdate(gameTime =>
+            {
+                foreach (var achievementId in this.achievementTrackerService.ActiveAchievements.ToList())
+                {
+                    if (!this.trackedAchievements.ContainsKey(achievementId))
+                    {
+                        this.AchievementTrackerService_AchievementTracked(achievementId);
+                    }
+                }
+            });
         }
 
         // The row's progress was rendered once, at build time, and never again -- so a tracked
@@ -1149,6 +1166,7 @@ namespace Quarry.UserInterface.Windows
             this.achievementTrackerService.AchievementUntracked -= this.AchievementTrackerService_AchievementUntracked;
             this.sessionSummaryService.Changed -= this.sessionSummaryChangedHandler;
             this.achievementService.PlayerAchievementsLoaded -= this.AchievementService_PlayerAchievementsLoaded;
+            this.achievementService.ApiAchievementsLoaded -= this.AchievementService_ApiAchievementsLoaded;
             this.currentMapService.Changed -= this.CurrentMapService_Changed;
             this.markerPackIndexService.Changed -= this.MarkerPackIndexService_Changed;
             this.hereExclusionService.Changed -= this.HereExclusionService_Changed;

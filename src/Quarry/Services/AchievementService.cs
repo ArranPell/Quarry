@@ -493,6 +493,9 @@ namespace Quarry.Services
 
                 this.logger.Debug("Finished getting achievement data from api");
 
+                // Phase 60: before the event, so every view's first refresh already sees them.
+                await this.AddApiOnlyAchievementsAsync(cancellationToken);
+
                 this.ApiAchievementsLoaded?.Invoke();
             }
             catch (OperationCanceledException)
@@ -514,6 +517,174 @@ namespace Quarry.Services
 
                 _ = Task.Run(async () => await this.InitializeApiAchievements(cancellationToken), cancellationToken);
             }
+        }
+
+        // Phase 60 (the interim fix ahead of 2.1's regenerated data): the wiki snapshot is from April 2026,
+        // so every achievement added since -- two Visions of Eternity maps, story chapters, a fractal --
+        // is missing from it, and the All tab, Here and the Target List all key off it. Build an entry
+        // from the API for each categorised id the wiki data lacks. It has no wiki extras (notes,
+        // coordinates, images), so it gets guidance tier None like any unplaced achievement, but it shows
+        // and can be tracked. Rows are in API bit order, so bit alignment resolves to identity.
+        // Best effort: a failure logs and leaves the wiki data as it was.
+        private async Task AddApiOnlyAchievementsAsync(CancellationToken cancellationToken)
+        {
+            const int batchSize = 200;
+
+            try
+            {
+                var known = this.AchievementsById;
+                var missingIds = this.AchievementCategories
+                    .SelectMany(c => c.Achievements)
+                    .Where(id => !known.ContainsKey(id))
+                    .Distinct()
+                    .ToList();
+
+                if (missingIds.Count == 0)
+                {
+                    return;
+                }
+
+                var apiAchievements = new List<Achievement>();
+                for (var i = 0; i < missingIds.Count; i += batchSize)
+                {
+                    apiAchievements.AddRange(await this.gw2ApiManager.Gw2ApiClient.V2.Achievements.ManyAsync(missingIds.Skip(i).Take(batchSize), cancellationToken));
+                }
+
+                var bits = apiAchievements.Where(a => a.Bits != null).SelectMany(a => a.Bits).ToList();
+                var itemNames = await this.FetchNamesAsync(bits.OfType<AchievementItemBit>().Select(b => b.Id), ids => this.gw2ApiManager.Gw2ApiClient.V2.Items.ManyAsync(ids, cancellationToken), x => x.Id, x => x.Name);
+                var skinNames = await this.FetchNamesAsync(bits.OfType<AchievementSkinBit>().Select(b => b.Id), ids => this.gw2ApiManager.Gw2ApiClient.V2.Skins.ManyAsync(ids, cancellationToken), x => x.Id, x => x.Name);
+                var miniNames = await this.FetchNamesAsync(bits.OfType<AchievementMinipetBit>().Select(b => b.Id), ids => this.gw2ApiManager.Gw2ApiClient.V2.Minis.ManyAsync(ids, cancellationToken), x => x.Id, x => x.Name);
+
+                var added = apiAchievements.Select(a => BuildApiOnlyEntry(a, itemNames, skinNames, miniNames)).ToList();
+
+                // Swap in new collections rather than mutating: readers hold the old ones mid-iteration.
+                var achievements = this.Achievements.Concat(added).ToList();
+                var achievementsById = new Dictionary<int, AchievementTableEntry>(known.Count + added.Count);
+                foreach (var achievement in achievements)
+                {
+                    achievementsById[achievement.Id] = achievement;
+                }
+
+                this.Achievements = achievements.AsReadOnly();
+                this.AchievementsById = achievementsById;
+
+                this.logger.Debug($"Added {added.Count} achievement(s) from the API that the wiki data doesn't have.");
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                this.logger.Warn(ex, "Failed to add achievements missing from the wiki data; showing the wiki data only.");
+            }
+        }
+
+        private async Task<IReadOnlyDictionary<int, string>> FetchNamesAsync<T>(IEnumerable<int> ids, Func<IEnumerable<int>, Task<IReadOnlyList<T>>> fetch, Func<T, int> getId, Func<T, string> getName)
+        {
+            const int batchSize = 200;
+            var idList = ids.Distinct().ToList();
+            var names = new Dictionary<int, string>();
+
+            for (var i = 0; i < idList.Count; i += batchSize)
+            {
+                try
+                {
+                    foreach (var fetched in await fetch(idList.Skip(i).Take(batchSize)))
+                    {
+                        names[getId(fetched)] = getName(fetched);
+                    }
+                }
+                catch (Exception ex) when (!(ex is OperationCanceledException))
+                {
+                    // A missing name falls back to a generic label below; not worth failing the entry for.
+                    this.logger.Warn(ex, "Failed to fetch names for API-only achievement objectives.");
+                }
+            }
+
+            return names;
+        }
+
+        // API text is plain text with the game's own colour tags (<c=@flavor>...</c>, <br>); the Inspector
+        // renders GameText/GameHint as wiki HTML. Drop the colour tags, keep line breaks, escape the rest.
+        private static string ToLabelHtml(string apiText)
+        {
+            if (string.IsNullOrWhiteSpace(apiText))
+            {
+                return null;
+            }
+
+            var text = System.Text.RegularExpressions.Regex.Replace(apiText, @"</?c(=[^>]*)?>", string.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            var lines = System.Text.RegularExpressions.Regex.Split(text, @"<br\s*/?>|\r?\n", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            return string.Join("<br>", lines.Select(line => System.Net.WebUtility.HtmlEncode(line.Trim()))).Trim();
+        }
+
+        private static AchievementTableEntry BuildApiOnlyEntry(Achievement api, IReadOnlyDictionary<int, string> itemNames, IReadOnlyDictionary<int, string> skinNames, IReadOnlyDictionary<int, string> miniNames)
+        {
+            var name = (api.Name ?? string.Empty).Trim();
+            var apiBits = api.Bits ?? (IReadOnlyList<AchievementBit>)Array.Empty<AchievementBit>();
+
+            string NameOf(IReadOnlyDictionary<int, string> names, int id, string kind)
+                => names.TryGetValue(id, out var found) && !string.IsNullOrWhiteSpace(found) ? found : $"{kind} {id}";
+
+            AchievementTableEntryDescription description;
+            if (apiBits.Any(b => !(b is AchievementTextBit)))
+            {
+                // Item bits carry their item id so BitAlignmentMatcher pairs them by id, as it does wiki rows.
+                description = new CollectionDescription
+                {
+                    EntryList = apiBits.Select(b =>
+                    {
+                        switch (b)
+                        {
+                            case AchievementItemBit item:
+                                return new CollectionDescriptionEntry { DisplayName = NameOf(itemNames, item.Id, "Item"), Id = item.Id };
+                            case AchievementSkinBit skin:
+                                return new CollectionDescriptionEntry { DisplayName = NameOf(skinNames, skin.Id, "Skin") };
+                            case AchievementMinipetBit mini:
+                                return new CollectionDescriptionEntry { DisplayName = NameOf(miniNames, mini.Id, "Miniature") };
+                            case AchievementTextBit text:
+                                return new CollectionDescriptionEntry { DisplayName = text.Text ?? string.Empty };
+                            default:
+                                return new CollectionDescriptionEntry();
+                        }
+                    }).ToList(),
+                };
+            }
+            else if (apiBits.Count > 0)
+            {
+                description = new ObjectivesDescription
+                {
+                    EntryList = apiBits.Select(b => new TableDescriptionEntry { DisplayName = ((AchievementTextBit)b).Text ?? string.Empty }).ToList(),
+                };
+            }
+            else
+            {
+                description = new StringDescription();
+            }
+
+            // Same split as the wiki data: its GameText is the API's requirement, its GameHint the flavour
+            // description. The requirement leaves a double space where the game prints the count; the
+            // last tier's count is what the wiki shows there ("Complete 36 map achievements").
+            var requirement = api.Requirement ?? string.Empty;
+            var lastTierCount = api.Tiers?.LastOrDefault()?.Count;
+            var countSlot = requirement.IndexOf("  ", StringComparison.Ordinal);
+            if (lastTierCount.HasValue && countSlot >= 0)
+            {
+                requirement = requirement.Substring(0, countSlot) + " " + lastTierCount.Value + " " + requirement.Substring(countSlot + 2);
+            }
+
+            description.GameText = ToLabelHtml(requirement);
+            description.GameHint = ToLabelHtml(api.Description);
+
+            return new AchievementTableEntry
+            {
+                Id = api.Id,
+                Name = name,
+                // No wiki page is known for it; the wiki's search goes straight to an exact title match.
+                Link = "/index.php?title=Special:Search&go=Go&search=" + Uri.EscapeDataString(name),
+                Description = description,
+            };
         }
 
         // The API is the authority when it says Done. But Blish's account cache lags by minutes, which is

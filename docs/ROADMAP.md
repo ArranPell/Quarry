@@ -30,7 +30,8 @@ on a date. The product rule is unchanged: bounded sessions, not completeness.
 
 ```
 Upstream PR ✅  →  RC1 ✅  →  RC2 ✅  →  RC3 ✅ (Batches D, F, G, E)  →  Batch H ✅  →  publish gate ✅ (2.0.0)
-  →  2.0.1 ✅  →  2.0.2 ✅ (own hosting)  →  2.0.3 ✅ (in-game repository)  ← HERE: maintenance; RC4 not started
+  →  2.0.1 ✅  →  2.0.2 ✅ (own hosting)  →  2.0.3 ✅ (in-game repository)  →  2.0.4/2.0.5 ✅ (Quarry#5)
+  ← HERE: 2.0.x maintenance  →  2.1 (fresh data and polish, planned)  →  2.2 (was RC4, candidate)
 ```
 
 - Every milestone through the publish gate is done and confirmed in-game. PLAN.md lists the releases
@@ -38,9 +39,9 @@ Upstream PR ✅  →  RC1 ✅  →  RC2 ✅  →  RC3 ✅ (Batches D, F, G, E)  
   as of 2.0.3.
 - Upstream PR #8 (Phase 23 bit alignment) is still open, waiting for Denrage's review:
   https://github.com/Denrage/AchievementTrackerModule/pull/8. That keeps the promise from issue #7.
-- Next: the 2.0.x maintenance items staged at the top of BACKLOG.md, which the first real bug report will
-  trigger, and the two open public bugs (`ArranPell/Quarry#3`, `#4`). RC4 below is a candidate, not a
-  commitment.
+- Next: 2.0.x keeps taking bug fixes (the open public bugs `ArranPell/Quarry#3` and `#4`, and what's
+  left at the top of BACKLOG.md). The longer-running work is 2.1 below, settled 2026-09-24. RC4 is now
+  2.2 and is still a candidate, not a commitment.
 
 What each batch built, and its load-test rounds, is in COMPLETED.md under the batch name. The reasoning is
 in DECISIONS.md under its date. The milestone sections below say what each RC contained.
@@ -179,9 +180,87 @@ Both stay in BACKLOG as the first candidates after RC3.
 RC3 closes when I play a session using only the Target List, the Inspector and toasts, and don't miss the
 Quarry window. It closed 2026-09-14 on Batch E's confirmation.
 
-## RC4 (candidate) — The module becomes a producer, not just a consumer
+## 2.1 — Fresh data and polish (planned 2026-09-24)
 
-This isn't committed. It would take the project past "a tracker plus routes" to something no other module
+Longer-running than a 2.0.x release, and separate from them: bug fixes keep shipping as 2.0.x while this
+is built. Nothing here is a phase yet. When an item is picked up, it becomes a phase in PLAN.md as usual.
+
+**Why data leads.** Measured 2026-09-24 (`docs/analysis/data_staleness.py`, re-runnable): the live API
+lists 8,339 achievements and our hosted data 6,778. Of the 1,613 we lack, 884 are uncategorised and 447
+are Historical. **268 are live**, mostly content released since April: all of *Eternity's Garden* and
+*Leyspring Hollows* (47 each), the *Code of Creation* and *The Only Way* story chapters, the *Solitary
+Throne* fractal, about 50 Bonus Events achievements and 16 Rare Collections. The module can't show any of
+them. The All tab and Here both build from the wiki data, and `PersistenceService` drops a tracked id the
+data doesn't know. So a player in Leyspring Hollows gets silence, not the "the data can't answer" message
+the product rule asks for. The gap grows with every game release.
+
+**Data, in this order** (each one makes the next safer):
+
+1. **API-only achievements.** For an id the API has and the wiki data doesn't, build the entry from the
+   API: name, description, bits, tiers, category. The achievement appears, can be tracked, and honestly
+   shows guidance tier *None*. There's nothing to scrape or host, and the next expansion is covered on
+   day one. Mostly `AchievementService` work.
+2. **Unit tests for the pure bits** (BACKLOG, Performance / robustness). Regenerated wiki data can reorder
+   rows, and `specialSnowflakeCompletedHandling` and bit alignment are where that would silently break
+   progress. Tests come before any regenerated file ships.
+3. **Generate the data ourselves, in our own format** (all-in, settled 2026-09-24, DECISIONS). The wiki
+   now exposes what the old scraper had to dig out of rendered HTML. Semantic MediaWiki holds every
+   achievement as a record keyed by game id (category, type, points, hidden/historical, mastery), and
+   the objectives are named template fields (`Achievement table row | id = …`,
+   `Objectives table row | col1 = {{point of interest|…}}`). So:
+   - **Source:** `api.php` only (SMW `ask` plus template parsing), no rendered HTML and no `cookies.txt`,
+     incremental by page revision. The old data's artefacts go with the scrape: 3,057 of 6,809 names
+     carry stray whitespace, and the "Closest landmark" chat codes are lost.
+   - **One file, keyed by API id, carrying only what features read.** It replaces
+     `achievement_data.json` (8.8 MB, with unused `Reward`/`Cite`/`HasLink`), `achievement_tables.json`
+     (20.7 MB, downloaded for 0.22 MB of Notes) and the embedded `derived_subpages.json` (6.8 MB, built
+     from Denrage's 70 MB `subPages.json`). The same file, embedded in the `.bhm`, is the offline
+     fallback. `Gw2WikiDownloader`, `DerivedSubpageGenerator` and very likely `Quarry.WikiData` retire.
+   - **Hard parts at build time:** each row's API bit index written out (the runtime matcher becomes a
+     fallback; `specialSnowflakeCompletedHandling` becomes a tested overrides file), and each row's
+     map(s), from coordinates, `point of interest` names, sectors and zone names.
+   - **New fields only where a feature reads them.** First candidate: the category's `requires`
+     (e.g. `voe`), so Here can label content the account doesn't own.
+   - **Provenance and safety:** our own `version.json` (schema version, `generated` stamp, sha256). The
+     Action validates (every live API id accounted for, alignment coverage not regressing) and opens a
+     PR with a diff summary rather than publishing blind.
+   - **Constraints:** a new path, because 2.0.x installs keep reading the frozen version 9 files. The
+     parser fails loudly on template drift. Wiki contributor content is GFDL 1.3, so the file and the
+     README carry the notice and attribution.
+   - **First step, a spike:** one category a player can test (Auric Basin), diffed row by row and bit by
+     bit against the current data, and measuring what share of rows resolve to a map (see 4).
+     **Done 2026-09-24** (`docs/analysis/generator-spike-findings.md`): all 35 achievements and 58 rows
+     recovered, 57 of 58 rows aligned to their bit by position, and 46 rows placed on the map (17 exact
+     points, 29 sectors) where the current data places none. Next: a cross-map place index, so core
+     Tyria and multi-map rows resolve to a map id.
+
+4. **Map-aware Here, built on per-row maps.** Today Here's membership is the category link plus "the
+   pack index has a marker for it on this map", done or not. Wiki locations only colour the badge; they
+   never add a candidate. So a multi-map achievement shows on a map where everything left is elsewhere,
+   and a core-Tyria achievement that only the wiki places never shows at all. With each row's map
+   known, the rule becomes *at least one remaining step is on this map*, with the category link as the
+   fallback for achievements whose rows can't be placed. Where the category says "here" but what's left
+   is elsewhere, the card can say where ("3 left, in Auric Basin"). The same data lifts some
+   achievements out of the opportunistic line: a description like "Search in the Griffonfall area"
+   links a place the generator can resolve. Coverage is unknown until the spike measures it. Phase 28
+   found coordinates on only 1.8 % of rows, so map membership has to come mostly from landmark and zone
+   names, which the old scrape lost. The pack-index half of the multi-map problem has a small runtime
+   fix that doesn't wait for 2.1 (BACKLOG).
+
+**Polish** rides along, picked from BACKLOG at batch boundaries. The first candidates: the flat window
+body that reads as blank (one file, `WindowBodyPainter`), auto-sizing the Quarry window to its content,
+the "some remaining steps are wiki-only" marker on the guidance badge, and buyable-item marking (useful on
+~4 % of item bits, so a rider, not a headline). Not in 2.1: the bearing arrow until
+`TryContinentToWorld`'s precision is measured, and our own font until Blish ships TTF loading.
+
+**Testing constraint.** Most of what item 1 unlocks is Visions of Eternity content, which I can't check on
+my account. The principle can be checked on Rare Collections, the Explorer/Rift Hunting stragglers and
+Solitary Throne. VoE itself goes to a reporter to confirm, per CLAUDE.md. Item 4's core-Tyria and multi-map
+behaviour is testable on my account.
+
+## 2.2 (was RC4, candidate) — The module becomes a producer, not just a consumer
+
+Renamed 2026-09-24, when 2.1 was set to fresh data and polish. This isn't committed. It would take the project past "a tracker plus routes" to something no other module
 does. All three items were written up 2026-09-14, with feasibility notes, and are tracked privately. The order
 matters, because each one feeds the next.
 
@@ -389,6 +468,8 @@ The steps, from this repo on `fork` with a clean tree:
    Blish's repo downloader requires it (DECISIONS 2026-09-21). Add the release's section to
    `CHANGELOG.md` and commit.
 2. `dotnet build src/Quarry/Quarry.csproj -c Release`; dev-load `bin\Release\net4.7.2\Quarry.bhm` once.
+   This checks the source, not the file users get: SSRD builds its own `.bhm` from the public repo
+   (step 5).
 3. Snapshot into a clone of the public repo and push:
 
    ```
@@ -398,12 +479,22 @@ The steps, from this repo on `fork` with a clean tree:
    ```
 
    `git rm -rq .` comes first so that files deleted since the last release disappear from the snapshot
-   too.
-4. `gh release create v<version> src\Quarry\bin\Release\net4.7.2\Quarry.bhm --repo ArranPell/Quarry --title "Quarry <version>" --notes-file <the CHANGELOG section>`.
+   too. **The public commit message is exactly `Quarry <version>`, with no trailers.** No
+   `Co-Authored-By`, no session links. An AI session's default attribution lines put a private session
+   URL into public history. 2.0.4's `cbc3bb8` went out with both (2026-09-23). Author it as
+   `ArranPell <35847740+ArranPell@users.noreply.github.com>` (DECISIONS 2026-09-20).
+4. **Optional.** `gh release create v<version> src\Quarry\bin\Release\net4.7.2\Quarry.bhm --repo ArranPell/Quarry --title "Quarry <version>" --notes-file <the CHANGELOG section>`.
+   The GitHub release is for people browsing the repo. Nothing in the install path reads it (step 5).
+   From a cloud session: the git proxy refuses tag pushes (2.0.4, 2026-09-23), so the tag gets created
+   along with the release, targeting the snapshot commit.
 5. The in-game module repository. Quarry has been listed there since 2.0.3 (2026-09-21). The listing went
    in 2026-09-20, but 2.0.2's manifest lacked `contributors` and the downloader failed on it. The listing
-   takes its description from the public repo's metadata, so keep Discussions on. How a new release
-   reaches the listing isn't written down yet: either automatically through the SSRD push webhook, or by
-   a manual SSRD submission. Record it here at the next release.
+   takes its description from the public repo's metadata, so keep Discussions on. **A new version
+   reaches it by a manual SSRD submission** (recorded at 2.0.4, 2026-09-23). SSRD builds the `.bhm`
+   fresh from the public repo's source, so no uploaded file is involved. A submission can be flagged
+   **pre-release**, which reaches only users who opt in. That's the way to hand a fix to a bug reporter
+   to confirm before everyone gets it. 2.0.4 went out that way first. **A version number used on the
+   pre-release track isn't reused for the normal branch:** 2.0.5 is 2.0.4 with only the version bumped,
+   submitted to the normal branch, and the `v2.0.4` GitHub release is marked Pre-release to match.
 
 Never push this repo's branches to the public repo. Keeping that history private is why item 0 exists.

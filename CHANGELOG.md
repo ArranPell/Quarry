@@ -2,6 +2,22 @@
 
 Keyed by the `version` in `src/Quarry/manifest.json`. Dates are release dates.
 
+## 2.0.6 — newer achievements, a Here fix and a lighter icon (2026-09-25)
+
+- **Added:** achievements newer than Quarry's wiki data (22 April 2026) now show up. That's about 730 of
+  them, including both newer Visions of Eternity maps, Solitary Throne, the missing Rare Collections and
+  a few Explorer and Rift Hunting stragglers. Quarry fetches them from the GW2 API once the categories
+  load, so they appear in the All tab, the Inspector and the Target List, and can be tracked. They carry
+  the API's text and objectives but no wiki notes, coordinates or images, so their guidance badge reads
+  "name only". The Wiki button runs a wiki search for the name.
+
+- **Fixed:** Here showed a multi-map achievement on a map where you'd already finished your part of it.
+  An achievement that's in Here only because a marker pack places it on the map now needs something left
+  to do on that map. Achievements linked to the map through their category are unchanged.
+
+- **Fixed:** the corner icon was much darker than Blish HUD's other icons
+  ([#6](https://github.com/ArranPell/Quarry/issues/6)). It's now light grey, and turns gold on hover.
+
 ## 2.0.5 — version bump only (2026-09-23)
 
 - No changes from 2.0.4. The version number moved on so 2.0.4 isn't published twice.

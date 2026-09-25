@@ -427,6 +427,7 @@ namespace Quarry.Services
             // since HereView groups cards by Category.Id. An index id with no resolvable (allowed)
             // category can't carry one, so it's dropped rather than shown without a group header.
             var candidateIds = new HashSet<int>(categoryByAchievementId.Keys);
+            var categoryLinkedIds = new HashSet<int>(categoryByAchievementId.Keys);
             var guidedIds = new HashSet<int>();
 
             if (this.markerPackIndexService.Ready)
@@ -487,6 +488,17 @@ namespace Quarry.Services
                 }
 
                 var guidance = this.nearestObjectiveService.GetGuidance(id, mapId);
+
+                // Phase 59: AchievementsOnMap lists every achievement with a marker on this map, done or
+                // not. For one that's here only because of the index, that marker is the whole claim, so
+                // once nothing on this map is left (no remaining tagged bit, wiki location or route) a
+                // multi-map achievement stops showing up where you've already finished your part of it.
+                // A category-linked one stays: the category says it belongs here whatever the index says.
+                if (!categoryLinkedIds.Contains(id) && guidance.Tier == GuidanceTier.None)
+                {
+                    continue;
+                }
+
                 var hasBits = apiAchievement.Bits != null && apiAchievement.Bits.Count > 0;
 
                 candidates.Add(new HereCandidate
